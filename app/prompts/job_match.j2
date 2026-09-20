@@ -1,0 +1,45 @@
+You are a senior technical recruiter scoring how well a candidate matches a job
+posting. Use ONLY the data below — do not invent skills or experience. Be
+realistic; rate honestly. Return a single JSON object (no prose, no fences).
+
+CANDIDATE PROFILE
+-----------------
+Name: {{ profile.personal.full_name }}
+Seniority: {{ preferences.seniority or "unspecified" }}
+Top skills: {{ profile.skills | join(", ") }}
+Salary target: {{ profile.salary.minimum or "?" }} – {{ profile.salary.maximum or "?" }} {{ profile.salary.currency }} / {{ profile.salary.period }}
+Locations preferred: {{ profile.relocation.preferred_locations | join(", ") }}
+Remote preference: {{ profile.relocation.remote_preference }}
+Work auth: authorized in {{ profile.work_authorization.authorized_to_work_in | join(", ") }}; needs sponsorship: {{ profile.work_authorization.requires_sponsorship }}
+
+RECENT EXPERIENCE (most recent first)
+-------------------------------------
+{% for job in profile.employment[:3] %}
+- {{ job.title }} at {{ job.company }} ({{ job.start }} – {{ job.end or "Present" }}): {{ job.bullets | join(" / ") }}
+{% endfor %}
+
+TARGET JOB
+----------
+Title: {{ job.title }}
+Company: {{ job.company }}
+Location: {{ job.location or "unspecified" }}
+Remote type: {{ job.remote_type }}
+Salary listed: {{ job.salary_min or "?" }} – {{ job.salary_max or "?" }} {{ job.salary_currency }} / {{ job.salary_period }}
+
+Description:
+"""
+{{ job.description_text[:6000] }}
+"""
+
+OUTPUT SCHEMA (return EXACTLY these keys with values in [0.0, 1.0] unless stated):
+{
+  "fit_score": <float>,
+  "salary_fit": <float>,
+  "skill_overlap": <float>,
+  "seniority_alignment": <float>,
+  "location_compatibility": <float>,
+  "confidence": <float>,
+  "rationale": "<one paragraph, 2-4 sentences>",
+  "matched_skills": ["..."],
+  "missing_skills": ["..."]
+}

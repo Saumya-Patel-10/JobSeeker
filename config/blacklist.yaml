@@ -1,0 +1,12 @@
+# Job Finding Assistant — blacklist.
+# Used by the ingest + apply pipelines to filter out unwanted opportunities.
+
+companies: []
+
+# Job titles or descriptions containing any of these substrings are filtered.
+keywords:
+  - "unpaid internship"
+  - "commission only"
+
+# Source URL domains to skip (case-insensitive substring match on the host).
+domains: []

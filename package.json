@@ -1,0 +1,23 @@
+{
+  "name": "job-finding-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Unified local runtime orchestrator for backend + frontend.",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev/dev.mjs",
+    "backend": "node scripts/dev/backend.mjs",
+    "frontend": "node scripts/dev/frontend.mjs",
+    "doctor": "node scripts/dev/doctor.mjs",
+    "install": "node scripts/dev/install.mjs",
+    "bootstrap": "node scripts/dev/bootstrap.mjs",
+    "lint": "node scripts/dev/lint.mjs",
+    "test": "node scripts/dev/test.mjs",
+    "format": "prettier --write \"**/*.{json,md,tsx,ts,js,mjs,yml,yaml}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}

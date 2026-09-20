@@ -1,0 +1,12 @@
+{
+  "id": "abc-123-def",
+  "text": "Backend Engineer",
+  "hostedUrl": "https://jobs.lever.co/example/abc-123-def",
+  "createdAt": 1717094400000,
+  "categories": {
+    "team": "Engineering",
+    "location": "Remote",
+    "commitment": "Full-time"
+  },
+  "descriptionHtml": "<p>Help us build the platform.</p>"
+}

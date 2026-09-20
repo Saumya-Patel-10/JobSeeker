@@ -1,0 +1,8 @@
+.venv
+node_modules
+frontend/node_modules
+frontend/.next
+data
+dist
+build
+*.lock

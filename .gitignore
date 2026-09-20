@@ -1,0 +1,112 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Type checkers / linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Virtual envs
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# --- JobAssist data ---
+# Keep the data/ directory structure (.gitkeep files), but ignore generated content
+data/jobs/*
+!data/jobs/.gitkeep
+data/applications/*
+!data/applications/.gitkeep
+data/resumes/generated/*
+!data/resumes/generated/.gitkeep
+data/resumes/master/*
+!data/resumes/master/.gitkeep
+data/logs/*
+!data/logs/.gitkeep
+data/cache/*
+!data/cache/.gitkeep
+data/browser_profiles/*
+!data/browser_profiles/.gitkeep
+data/screenshots/*
+!data/screenshots/.gitkeep
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# User-edited configs may contain personal data; the user copies templates
+# from config/ on `init` then edits in place. We keep the templates checked
+# in but ignore the *.local.* variant if used.
+config/*.local.*
+
+# Cursor
+.cursorignore
+.cursorindexingignore
+
+# Node / monorepo
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/.turbo/
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*

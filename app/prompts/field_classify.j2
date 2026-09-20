@@ -1,0 +1,30 @@
+You are analyzing form fields on an online job application page. For each
+field, decide the most plausible input type and (if confident) propose an
+answer drawn ONLY from the candidate's profile and standard answers. If you
+cannot answer a field truthfully, set "suggested_answer" to null and
+"answered_from" to "unanswered".
+
+CANDIDATE PROFILE (JSON):
+{{ profile_json }}
+
+PRE-CANNED STANDARD ANSWERS (JSON):
+{{ standard_answers_json }}
+
+FORM FIELDS (JSON array):
+{{ fields_json }}
+
+Return ONLY a JSON object with key "fields" containing one entry per input
+field, in the same order as the input array:
+{
+  "fields": [
+    {
+      "label": "<echo>",
+      "selector": "<echo>",
+      "field_type": "text|textarea|select|multiselect|checkbox|radio|file|date|email|phone|number|url|unknown",
+      "required": true,
+      "options": ["..."],
+      "suggested_answer": "..." | null,
+      "answered_from": "profile" | "memory" | "llm" | "unanswered"
+    }
+  ]
+}

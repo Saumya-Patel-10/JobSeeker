@@ -1,0 +1,60 @@
+# Job Finding Assistant — discovery sources (polled by DiscoveryScheduler).
+# Enable sources in Control Center or set enabled: true here.
+
+sources:
+  - name: "linkedin"
+    type: "linkedin_search"
+    enabled: false
+    config:
+      keywords:
+        - "systems engineer"
+        - "program manager"
+
+  - name: "indeed"
+    type: "indeed_search"
+    enabled: false
+    config: {}
+
+  - name: "glassdoor"
+    type: "glassdoor_search"
+    enabled: false
+    config: {}
+
+  - name: "raytheon"
+    type: "raytheon_careers"
+    enabled: false
+    config:
+      keywords:
+        - "systems engineer"
+
+  - name: "l3harris"
+    type: "l3harris_careers"
+    enabled: false
+    config: {}
+
+  - name: "texas-instruments"
+    type: "ti_careers"
+    enabled: false
+    config: {}
+
+  - name: "stripe-greenhouse"
+    type: "greenhouse_board"
+    enabled: false
+    config:
+      board_token: "stripe"
+      keywords:
+        - "systems"
+        - "program"
+
+  - name: "ramp-lever"
+    type: "lever_board"
+    enabled: false
+    config:
+      site_id: "ramp"
+      department: "Engineering"
+
+  - name: "manual-urls"
+    type: "url_list"
+    enabled: true
+    config:
+      urls: []

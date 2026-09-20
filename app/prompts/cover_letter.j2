@@ -1,0 +1,26 @@
+Write a tailored cover letter (250–350 words) for the candidate. Plain prose —
+no headers, no bullet lists, no greeting placeholders like "Dear Hiring Manager"
+unless one fits the company tone. Sign off with the candidate's full name only.
+
+CANDIDATE: {{ profile.personal.full_name }}
+HEADLINE: {{ resume.headline or "" }}
+TOP SKILLS: {{ resume.skills[:10] | join(", ") }}
+
+TARGET JOB:
+Title: {{ job.title }}
+Company: {{ job.company }}
+Description:
+"""
+{{ job.description_text[:5000] }}
+"""
+
+Constraints:
+- Open with a specific reason the candidate is excited about THIS company or
+  product, drawing from the job description.
+- Reference at most two concrete past accomplishments (taken only from the
+  data above) and connect each to a clear need in the job posting.
+- Avoid corporate clichés: "results-driven", "self-starter", "team player",
+  "passionate about", "synergy".
+- Be honest about gaps — do not claim experience the candidate lacks.
+
+Output only the letter text.

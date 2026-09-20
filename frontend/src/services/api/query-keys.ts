@@ -1,0 +1,30 @@
+export const queryKeys = {
+  status: ["status"] as const,
+  jobs: (params?: Record<string, unknown>) => ["jobs", params ?? {}] as const,
+  jobDetail: (jobId: number) => ["jobs", jobId] as const,
+  jobWorkspace: (jobId: number) => ["jobs", jobId, "workspace"] as const,
+  applications: (params?: Record<string, unknown>) =>
+    ["applications", params ?? {}] as const,
+  applicationDetail: (applicationId: number) =>
+    ["applications", applicationId] as const,
+  resumesForJob: (jobId: number) => ["resumes", "job", jobId] as const,
+  score: (jobId: number) => ["score", jobId] as const,
+  profile: ["profile"] as const,
+  settings: ["settings"] as const,
+  analyticsSummary: ["analytics", "summary"] as const,
+  automationOverview: ["automation", "overview"] as const,
+  automationSessions: (limit: number) => ["automation", "sessions", limit] as const,
+  automationEvents: (params?: Record<string, unknown>) =>
+    ["automation", "events", params ?? {}] as const,
+  aiActivity: (limit: number) => ["ai", "activity", limit] as const,
+  aiSummary: (limit: number) => ["ai", "summary", limit] as const,
+  browserProfiles: ["browser", "profiles"] as const,
+  browserHealth: ["browser", "health"] as const,
+  jobHuntStatus: ["control-center", "job-hunt", "status"] as const,
+  controlCenterActivity: (limit: number) => ["control-center", "activity", limit] as const,
+  runtime: ["automation", "runtime"] as const,
+  discoveryStatus: ["discovery", "status"] as const,
+  sourceHealth: ["sources", "health"] as const,
+  approvals: ["approvals", "pending"] as const,
+  blacklistSuggestions: ["blacklist", "suggestions"] as const,
+};

@@ -1,0 +1,7 @@
+{
+  "name": "ML / AI Engineer",
+  "section_order": ["summary", "skills", "projects", "experience", "education"],
+  "max_bullets_per_role": 5,
+  "include_tech_line": true,
+  "include_publications": true
+}

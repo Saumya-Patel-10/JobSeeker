@@ -1,0 +1,56 @@
+llm:
+  provider: lmstudio
+  base_url: http://localhost:1234/v1
+  api_key: lm-studio
+  chat_model: local-model
+  embedding_model: null
+  request_timeout: 120.0
+  max_retries: 3
+  temperature: 0.2
+browser:
+  engine: firefox
+  persistent_profile: true
+  profile_source: system
+  firefox_profile: default-release
+  headless: false
+  slowmo_ms: 50
+  profile: default
+  reuse_existing_session: true
+  clone_system_profile_on_lock: true
+  locale: en-US
+  user_agent: null
+  timeout_ms: 30000
+  viewport_width: 1366
+  viewport_height: 900
+apply:
+  default_mode: human_review
+  allow_auto_submit: false
+  daily_limit: 20
+  require_min_score: 0.6
+  confirm_before_submit: true
+automation:
+  max_concurrent_sessions: 1
+  cooldown_seconds: 90
+  default_interval_minutes: 30
+scoring:
+  weights:
+    skill_overlap: 0.35
+    seniority_alignment: 0.2
+    salary_fit: 0.15
+    location_compatibility: 0.15
+    fit_score: 0.15
+seniority: mid
+locations:
+- Austin, TX
+- Remote (US)
+role_keywords:
+- backend
+- platform
+- infrastructure
+- distributed systems
+- python
+excluded_keywords:
+- unpaid
+- commission only
+target_companies: []
+remote_preference: no_preference

@@ -1,0 +1,8 @@
+packages:
+  - "frontend"
+allowBuilds:
+  msw: true
+  sharp: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - shadcn@4.8.1

@@ -1,0 +1,233 @@
+# Job Finding Assistant — user profile.
+# Edit this file with your real information. Pipelines validate it via the
+# Pydantic schema in app/models/profile.py — missing required fields will
+# cause `jobassist doctor` to fail with a clear message.
+
+personal:
+  first_name: "Satyam"
+  last_name: "Garg"
+  email: "SatyamGarg108@gmail.com"
+  phone: "4699258587"
+  pronouns: "He/Him"
+  date_of_birth: "2004-07-02"
+  address:
+    street: 305 Riva Rdg
+    city: Wylie
+    state: TX
+    postal_code: "75098"
+    country: "United States"
+
+links:
+  linkedin: "https://www.linkedin.com/in/satyamgarg108"
+  github: "https://github.com/SatyamGarg108"
+  portfolio: https://satyam-portfolio-vert.vercel.app/
+  website: null
+  twitter: null
+
+work_authorization:
+  authorized_to_work_in:
+    - "United States"
+  requires_sponsorship: false
+  visa_status: "US citizen"
+
+salary:
+  currency: "USD"
+  minimum: null
+  target: null
+  maximum: null
+  period: "year"
+
+relocation:
+  willing_to_relocate: True
+  preferred_locations:
+    - "Anywhere"
+  remote_preference: "no_preference" # remote | hybrid | onsite | no_preference
+
+demographic:
+  # All fields are optional. Set decline_to_self_identify to true to refuse
+  # voluntary EEOC questions.
+  gender: Male
+  race_ethnicity: [Asian, Non-Hispanic]
+  veteran_status: Not_a_veteran
+  disability_status: None
+  decline_to_self_identify: False
+
+standard_answers:
+  - question: "Are you legally authorized to work in the United States?"
+    answer: "Yes, I am a US citizen."
+    category: "work_auth"
+  - question: "Will you now or in the future require sponsorship?"
+    answer: "No"
+    category: "work_auth"
+  - question: "What is your earliest start date?"
+    answer: "ASAP"
+    category: "availability"
+  - question: "Have you ever been employed by us before?"
+    answer: "No"
+    category: "history"
+
+education:
+  - institution: "The University of Texas at Dallas"
+    degree: "B.S. Computer Science"
+    field: "Computer Science"
+    start_year: 2022
+    end_year: 2026
+    gpa: 3.0
+    honors:
+      - "Cyber Defense Certificate"
+      - "Relevant courses: Digital Forensics, Computer Network Security, Data and Application Security, Computer Networks"
+
+certifications:
+  - name: "Introduction to Networking and Cloud Computing"
+    issuer: "Microsoft via Coursera"
+    issued: "2024-02-04"
+    credential_id: "P73MLWCUWX7N"
+    url: "https://coursera.org/verify/P73MLWCUWX7N"
+  - name: "Microsoft Office Specialist for Office Outlook 2016"
+    issuer: "Microsoft"
+    issued: "2019-01-24"
+    credential_id: "X6YT-TSFQ-ZQ"
+    url: "https://verify.certiport.com"
+  - name: "Microsoft Office Specialist for Office Word 2016"
+    issuer: "Microsoft"
+    issued: "2019-02-06"
+    credential_id: "3CQP-6JS1-O"
+    url: "https://verify.certiport.com"
+  - name: "Mobility and Device Fundamentals"
+    issuer: "Microsoft"
+    issued: "2021-04-30"
+    credential_id: "wMWpC-H9x6"
+    url: "https://verify.certiport.com"
+  - name: "Networking Fundamentals"
+    issuer: "Microsoft"
+    issued: "2019-12-16"
+    credential_id: "mEYJ-DTh4"
+    url: "https://verify.certiport.com"
+  - name: "Security Fundamentals"
+    issuer: "Microsoft"
+    issued: "2021-12-07"
+    credential_id: "PTHT-uGHM"
+    url: "https://verify.certiport.com"
+  - name: "Certified PC Pro"
+    issuer: "TestOut"
+    issued: "2021-05-18"
+    credential_id: "Certificate ID: 6-1C6-C6JDN; Candidate ID: 6-U6-46K6"
+    url: null
+  - name: "Windows Operating System Fundamentals"
+    issuer: "Microsoft"
+    issued: "2020-11-18"
+    credential_id: "wMnuT-Hay6"
+    url: "https://verify.certiport.com"
+  - name: "AWS Certified Cloud Practitioner"
+    issuer: "Amazon Web Services"
+    issued: "2026-01-07"
+    credential_id: "4c352af5248a41d08d64b5db89683ecb"
+    url: "https://aws.amazon.com/verification"
+  - name: "CodePath Intro to Cybersecurity"
+    issuer: "CodePath"
+    issued: "Spring 2023"
+    credential_id: "143660"
+    url: null
+  - name: "CompTIA Security+"
+    issuer: "CompTIA"
+    issued: "2025-11-28"
+    expires: "2028-11-28"
+    credential_id: "cfd47fcbebc44186b0766c21db1bdfd0; Candidate ID: COMP001022882921"
+    url: "http://verify.CompTIA.org"
+  - name: "Technical Support Fundamentals"
+    issuer: "Google via Coursera"
+    issued: "2021-10-30"
+    credential_id: "YLCD8BZGUZ64"
+    url: "https://coursera.org/verify/YLCD8BZGUZ64"
+  - name: "Introduction to Computers and Operating Systems and Security"
+    issuer: "Microsoft via Coursera"
+    issued: "2024-01-15"
+    credential_id: "475DEKNNUP4U"
+    url: "https://coursera.org/verify/475DEKNNUP4U"
+
+employment:
+  - company: "US Anesthesia Partners"
+    title: "SQL Server and Azure Intern"
+    location: null
+    start: "2026-04"
+    end: null
+    current: true
+    bullets:
+      - "Developed and optimized T-SQL queries and stored procedures, improving data retrieval efficiency across relational datasets."
+      - "Performed database maintenance tasks including indexing, backups, and performance tuning to ensure reliability and scalability."
+      - "Supported Azure data migrations and built ETL pipelines using Azure SQL and related services."
+    tech:
+      - "T-SQL"
+      - "SQL Server"
+      - "Azure"
+      - "ETL"
+
+  - company: "Every City Church"
+    title: "Freelance Engineer"
+    location: null
+    start: "2025-05"
+    end: "2026-05"
+    current: False
+    bullets:
+      - "Led migration from WordPress on Bluehost to a serverless Next.js + Firebase architecture across AWS and GCP, managing DNS, SSL, and production cutover."
+      - "Designed branch-based CI/CD pipelines with isolated dev/prod environments enabling zero-downtime deployments."
+      - "Engineered secure architecture using Firestore RBAC, centralized secrets management with GCP Secret Manager, and SSR/SSG caching optimizations, reducing database operations by about 30%."
+    tech:
+      - "Next.js"
+      - "Firebase"
+      - "AWS"
+      - "GCP"
+      - "CI/CD"
+      - "Route 53"
+
+  - company: "Dallas County"
+    title: "IT Intern - Technician"
+    location: null
+    start: "2025-05"
+    end: "2026-04"
+    current: false
+    bullets:
+      - "Administered Active Directory lifecycle management, including provisioning, deprovisioning, and role-based access control across enterprise systems."
+      - "Resolved Tier 2/3 infrastructure issues across county offices, troubleshooting identity, endpoint, and network configuration failures."
+      - "Managed hardware deployment, inventory tracking, and enterprise software licensing across multiple locations."
+    tech:
+      - "Active Directory"
+      - "RBAC"
+      - "Windows"
+      - "Networking"
+
+skills:
+  - "AWS"
+  - "Azure"
+  - "Google Cloud (Firebase)"
+  - "Terraform"
+  - "Ansible"
+  - "Jenkins"
+  - "Docker"
+  - "CI/CD"
+  - "VMware ESXi"
+  - "vCenter"
+  - "Citrix XenServer"
+  - "Proxmox"
+  - "Windows Server"
+  - "OpenSCAP"
+  - "RBAC"
+  - "IAM"
+  - "Firestore Security Rules"
+  - "Secrets Management"
+  - "MITRE ATT&CK"
+  - "Python"
+  - "Java"
+  - "C++"
+  - "TypeScript"
+  - "Next.js"
+  - "Firebase"
+  - "VPCs"
+  - "Subnets"
+  - "Routing"
+  - "DNS"
+  - "Active Directory"
+  - "SQL Server"
+  - "Azure SQL"
+  - "MySQL"
+  - "T-SQL"

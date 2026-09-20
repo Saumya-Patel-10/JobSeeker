@@ -1,0 +1,35 @@
+# Job Finding Assistant — prompt registry.
+# Each entry maps a logical prompt name to a Jinja2 template under
+# app/prompts/. Inline overrides for temperature, model, and response_format
+# take precedence over the LLM defaults in preferences.yaml.
+
+prompts:
+  job_match:
+    template: "job_match.j2"
+    description: "Score a job against the user profile and resume."
+    temperature: 0.1
+    response_format: "json"
+
+  resume_tailor:
+    template: "resume_tailor.j2"
+    description: "Rewrite the master resume targeted to a single job."
+    temperature: 0.3
+    response_format: "json"
+
+  cover_letter:
+    template: "cover_letter.j2"
+    description: "Generate a tailored cover letter."
+    temperature: 0.4
+    response_format: "text"
+
+  field_classify:
+    template: "field_classify.j2"
+    description: "Classify form fields detected on an application page."
+    temperature: 0.0
+    response_format: "json"
+
+  answer_question:
+    template: "answer_question.j2"
+    description: "Answer a free-text application question using the profile."
+    temperature: 0.3
+    response_format: "text"

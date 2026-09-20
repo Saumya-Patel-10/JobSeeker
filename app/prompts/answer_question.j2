@@ -1,0 +1,18 @@
+You are helping a candidate answer ONE free-text application question in
+their voice. Use only the profile data and any prior approved answers below.
+Be honest — do not invent experience.
+
+CANDIDATE PROFILE SUMMARY:
+Name: {{ profile.personal.full_name }}
+Headline: {{ resume.headline or "" }}
+Top skills: {{ profile.skills | join(", ") }}
+Recent role: {% if profile.employment %}{{ profile.employment[0].title }} at {{ profile.employment[0].company }}{% else %}n/a{% endif %}
+
+EXISTING STANDARD ANSWERS (categorized JSON):
+{{ standard_answers_json }}
+
+QUESTION:
+{{ question }}
+
+Write only the answer text. 50–150 words unless the question clearly needs
+less. Plain prose. No quote marks around the answer.

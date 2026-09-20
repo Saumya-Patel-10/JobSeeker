@@ -1,0 +1,7 @@
+{
+  "name": "Generic Software Engineer",
+  "section_order": ["summary", "skills", "experience", "education", "projects"],
+  "max_bullets_per_role": 6,
+  "include_tech_line": true,
+  "include_publications": false
+}

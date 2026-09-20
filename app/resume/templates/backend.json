@@ -1,0 +1,7 @@
+{
+  "name": "Backend Engineer",
+  "section_order": ["summary", "skills", "experience", "projects", "education"],
+  "max_bullets_per_role": 5,
+  "include_tech_line": true,
+  "include_publications": false
+}
