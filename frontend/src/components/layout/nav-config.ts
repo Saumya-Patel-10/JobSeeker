@@ -5,6 +5,7 @@ import {
   Bot,
   BriefcaseBusiness,
   ClipboardCheck,
+  CreditCard,
   FileText,
   Gauge,
   MonitorCog,
@@ -22,10 +23,22 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   {
-    label: "Dashboard",
+    label: "Command Center",
     href: "/",
     icon: Gauge,
-    description: "Overview of ingestion, review queue, and AI throughput",
+    description: "High-match job feed, Kanban tracker & live bot",
+  },
+  {
+    label: "Onboarding Wizard",
+    href: "/onboarding",
+    icon: SlidersHorizontal,
+    description: "Step-by-step setup: account, plans & resume verification",
+  },
+  {
+    label: "Pricing & Plans",
+    href: "/select-plan",
+    icon: CreditCard,
+    description: "Choose Free, $3.99 Growth, or $7.99 Pro tier",
   },
   {
     label: "Control Center",

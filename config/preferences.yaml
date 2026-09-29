@@ -2,7 +2,7 @@ llm:
   provider: lmstudio
   base_url: http://localhost:1234/v1
   api_key: lm-studio
-  chat_model: local-model
+  chat_model: gemma-4-12b
   embedding_model: null
   request_timeout: 120.0
   max_retries: 3
@@ -49,8 +49,25 @@ role_keywords:
 - infrastructure
 - distributed systems
 - python
+- cloud
+- security
+- devops
 excluded_keywords:
 - unpaid
 - commission only
+excluded_titles:
+- intern
+- internship
+- junior
+- jr.
+- staff augmentation
+- contractor only
+- part-time
+preferred_industries: []
 target_companies: []
 remote_preference: no_preference
+salary_expectations:
+  min: 110000
+  max: 130000
+  currency: USD
+  period: year

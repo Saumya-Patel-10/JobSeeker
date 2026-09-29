@@ -5,6 +5,7 @@ import { Pause, Play, Hand, Bot, Square, Check, X } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StatusPill } from "@/components/workflow/status-pill";
@@ -33,11 +34,10 @@ export function LiveBrowserPage() {
       <PageHeader
         title="Live Browser"
         description="Supervise Firefox automation in real time — screenshots, actions, and human override."
-        actions={
-          <StatusPill
-            label={connected ? "WS connected" : "WS disconnected"}
-            tone={connected ? "success" : "warning"}
-          />
+        right={
+          <Badge variant={connected ? "default" : "secondary"}>
+            {connected ? "WS Connected" : "WS Disconnected"}
+          </Badge>
         }
       />
 

@@ -23,16 +23,7 @@ export function SourceHealthPanel() {
                 <div className="font-medium">{s.name}</div>
                 <div className="text-xs text-muted-foreground">{s.type}</div>
               </div>
-              <StatusPill
-                label={s.health_status}
-                tone={
-                  s.health_status === "healthy"
-                    ? "success"
-                    : s.health_status === "not_implemented"
-                      ? "neutral"
-                      : "warning"
-                }
-              />
+              <StatusPill status={s.health_status} />
             </li>
           ))}
         </ul>

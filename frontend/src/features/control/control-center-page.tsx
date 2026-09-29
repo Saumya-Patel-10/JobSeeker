@@ -704,7 +704,7 @@ export function ControlCenterPage() {
             />
             <div className="space-y-2">
               <label className="text-xs text-muted-foreground">Select profile</label>
-              <Select value={profileChoice} onValueChange={setProfileChoice}>
+              <Select value={profileChoice} onValueChange={(val) => setProfileChoice(val ?? "")}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose a profile" />
                 </SelectTrigger>

@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: jobaigent_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # ── FastAPI app ─────────────────────────────────────────────────────────────
+  api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  # ── Celery AI Worker (resume tailoring + LLM) ───────────────────────────────
+  celery_ai_worker:
+    build: .
+    command: celery -A app.workers.celery_app worker --loglevel=info -Q ai_queue -c 4
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  # ── Celery Bot Worker (Playwright browser automation) ──────────────────────
+  celery_bot_worker:
+    build: .
+    command: celery -A app.workers.celery_app worker --loglevel=info -Q bot_queue -c 2
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  # ── Celery Beat (cron scheduler — job discovery every 30 min) ──────────────
+  celery_beat:
+    build: .
+    command: celery -A app.workers.celery_app beat --loglevel=info --scheduler celery.beat:PersistentScheduler
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  # ── Flower (Celery monitoring) ──────────────────────────────────────────────
+  flower:
+    build: .
+    command: celery -A app.workers.celery_app flower --port=5555
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+volumes:
+  pg_data:

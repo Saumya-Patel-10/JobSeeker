@@ -4,11 +4,15 @@
 sources:
   - name: "linkedin"
     type: "linkedin_search"
-    enabled: false
+    enabled: true
     config:
       keywords:
+        - "software engineer"
         - "systems engineer"
-        - "program manager"
+        - "cloud engineer"
+        - "security engineer"
+        - "devops engineer"
+        - "infrastructure engineer"
 
   - name: "indeed"
     type: "indeed_search"
@@ -39,16 +43,16 @@ sources:
 
   - name: "stripe-greenhouse"
     type: "greenhouse_board"
-    enabled: false
+    enabled: true
     config:
       board_token: "stripe"
       keywords:
-        - "systems"
-        - "program"
+        - "engineer"
+        - "security"
 
   - name: "ramp-lever"
     type: "lever_board"
-    enabled: false
+    enabled: true
     config:
       site_id: "ramp"
       department: "Engineering"

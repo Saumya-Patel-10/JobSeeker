@@ -1,0 +1,61 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  DOCKER / PRODUCTION DEPLOYMENT DEPENDENCIES ONLY                          ║
+# ║                                                                              ║
+# ║  This file is for the Docker Compose path (PostgreSQL + Redis + Celery).    ║
+# ║  For local development with SQLite + LM Studio, use pyproject.toml:         ║
+# ║    pip install -e ".[dev]"   OR   run: pnpm bootstrap                       ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# ─── Web Framework ───────────────────────────────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+
+# ─── Database & ORM ──────────────────────────────────────────────────────────
+sqlalchemy==2.0.30
+alembic==1.13.1
+asyncpg==0.29.0            # async PostgreSQL driver
+psycopg2-binary==2.9.9     # sync driver for Alembic migrations
+
+# ─── Auth ────────────────────────────────────────────────────────────────────
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.1
+
+# ─── Task Queue ──────────────────────────────────────────────────────────────
+celery==5.4.0
+redis==5.0.4
+flower==2.0.1              # Celery monitoring dashboard
+
+# ─── WebSockets ──────────────────────────────────────────────────────────────
+websockets==12.0
+
+# ─── AI / LLM ────────────────────────────────────────────────────────────────
+openai==1.35.3             # GPT-4o for resume tailoring & cover letters
+tiktoken==0.7.0            # token counting
+
+# ─── Resume Parsing ──────────────────────────────────────────────────────────
+pdfplumber==0.11.0         # PDF text extraction
+python-docx==1.1.2         # DOCX read/write
+docx2pdf==0.1.8            # convert tailored DOCX → PDF
+
+# ─── Web Scraping ────────────────────────────────────────────────────────────
+playwright==1.44.0         # headless browser (Celery Worker 2)
+beautifulsoup4==4.12.3
+httpx==0.27.0
+lxml==5.2.2
+
+# ─── Payments (Stripe) ───────────────────────────────────────────────────────
+stripe==9.9.0
+
+# ─── File Storage (S3-compatible) ────────────────────────────────────────────
+boto3==1.34.131
+aiofiles==23.2.1
+
+# ─── Utilities ───────────────────────────────────────────────────────────────
+pydantic[email]==2.7.4
+pydantic-settings==2.3.0
+tenacity==8.3.0            # retry logic for scrapers
+loguru==0.7.2
+celery-beat==0.0.1         # periodic tasks scheduler alias (beat is built-in)
+apscheduler==3.10.4        # cron-style scheduler inside Celery beat

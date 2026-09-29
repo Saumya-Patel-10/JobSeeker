@@ -1,5 +1,5 @@
-import { DashboardPage } from "@/features/dashboard/dashboard-page"
+import { CommandCenterDashboard } from "@/features/command-center/command-center-dashboard";
 
 export default function Home() {
-  return <DashboardPage />
+  return <CommandCenterDashboard />;
 }
