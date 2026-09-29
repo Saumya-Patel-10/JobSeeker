@@ -15,6 +15,8 @@
     "bootstrap": "node scripts/dev/bootstrap.mjs",
     "lint": "node scripts/dev/lint.mjs",
     "test": "node scripts/dev/test.mjs",
+    "build": "npm --prefix frontend run build",
+    "typecheck": "npm --prefix frontend run typecheck",
     "format": "prettier --write \"**/*.{json,md,tsx,ts,js,mjs,yml,yaml}\""
   },
   "devDependencies": {
