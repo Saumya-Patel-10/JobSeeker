@@ -1,12 +1,11 @@
 """Auth routes — register, login, me."""
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.db.session import get_db
 from app.models.user import User, PlanType
-from app.schemas.auth import UserRegister, Token, UserOut
+from app.schemas.auth import UserRegister, UserLogin, Token, UserOut
 from app.core.security import hash_password, verify_password, create_access_token
 from app.core.dependencies import get_current_user, get_plan_daily_limit
 
@@ -43,13 +42,13 @@ async def register(payload: UserRegister, db: AsyncSession = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    payload: UserLogin,
     db: AsyncSession = Depends(get_db),
 ):
     """Return JWT access token."""
-    result = await db.execute(select(User).where(User.email == form_data.username))
+    result = await db.execute(select(User).where(User.email == payload.email))
     user = result.scalar_one_or_none()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

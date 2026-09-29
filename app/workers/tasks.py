@@ -25,7 +25,17 @@ import json
 import logging
 from datetime import datetime, timezone
 
-from celery import shared_task
+try:
+    from celery import shared_task
+except ImportError:
+    def shared_task(*args, **kwargs):
+        def decorator(func):
+            func.delay = lambda *a, **k: None
+            func.apply_async = lambda *a, **k: None
+            return func
+        if args and callable(args[0]):
+            return decorator(args[0])
+        return decorator
 from sqlalchemy import select
 
 from app.workers.celery_app import celery_app

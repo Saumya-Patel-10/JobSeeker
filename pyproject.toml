@@ -3,14 +3,14 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "jobassist"
-version = "0.1.0"
-description = "Local AI-powered job application agent"
+name = "jobseeker"
+version = "1.1.0"
+description = "AI-powered job discovery and application platform"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
-authors = [{ name = "Vibhu" }]
-keywords = ["jobs", "automation", "ai", "playwright", "local-llm"]
+authors = [{ name = "Saumya Patel" }]
+keywords = ["jobs", "automation", "ai", "playwright", "local-llm", "jobseeker"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -75,6 +75,7 @@ embeddings = [
 
 [project.scripts]
 jobassist = "app.cli.main:app"
+jobseeker = "app.cli.main:app"
 
 [project.urls]
 Homepage = "https://github.com/local/jobassist"

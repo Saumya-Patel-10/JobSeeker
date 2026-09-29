@@ -5,20 +5,22 @@ Subscriptions / Stripe routes
 - GET  /me        → current subscription status
 - POST /cancel    → cancel at period end
 """
-import stripe
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.config import settings
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_plan_daily_limit
 from app.db.session import get_db
 from app.models.user import User, PlanType
 from app.models.subscription import Subscription
 from app.schemas.common import CheckoutSessionCreate, SubscriptionOut
-from app.core.dependencies import get_plan_daily_limit
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+try:
+    import stripe
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+except ImportError:
+    stripe = None
 
 router = APIRouter()
 

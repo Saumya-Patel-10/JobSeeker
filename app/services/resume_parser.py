@@ -8,8 +8,15 @@ import json
 import re
 from typing import Optional
 
-import pdfplumber
-from docx import Document
+try:
+    import pdfplumber
+except ImportError:
+    pdfplumber = None
+
+try:
+    from docx import Document
+except ImportError:
+    Document = None
 
 
 async def parse_resume_text(file_bytes: bytes, content_type: str) -> str:
@@ -22,6 +29,8 @@ async def parse_resume_text(file_bytes: bytes, content_type: str) -> str:
 
 
 def _parse_pdf(file_bytes: bytes) -> str:
+    if pdfplumber is None:
+        return ""
     text_parts = []
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
         for page in pdf.pages:
@@ -32,6 +41,8 @@ def _parse_pdf(file_bytes: bytes) -> str:
 
 
 def _parse_docx(file_bytes: bytes) -> str:
+    if Document is None:
+        return ""
     doc = Document(io.BytesIO(file_bytes))
     paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
     return "\n".join(paragraphs)
@@ -39,42 +50,35 @@ def _parse_docx(file_bytes: bytes) -> str:
 
 async def extract_style_snapshot(text: str) -> Optional[str]:
     """
-    Analyse writing style for cover letter matching.
-    Returns a JSON string with:
-      - avg_words_per_sentence
-      - formality_score (estimated)
-      - common_phrases (top 5)
+    Extracts high-level writing style characteristics from the resume text.
+    Cached on the Resume model to match tone during cover letter generation (BASIC/PRO).
     """
-    if not text or len(text) < 100:
+    if not text:
         return None
 
-    sentences = re.split(r"[.!?]+", text)
-    sentences = [s.strip() for s in sentences if len(s.strip()) > 10]
+    sentences = [s.strip() for s in re.split(r"[.!?]+", text) if len(s.strip()) > 10]
+    words = re.findall(r"\b[A-Za-z]{3,}\b", text.lower())
 
-    if not sentences:
+    if not sentences or not words:
         return None
 
-    avg_words = sum(len(s.split()) for s in sentences) / len(sentences)
+    avg_sentence_len = round(len(words) / len(sentences), 1)
+    unique_ratio = round(len(set(words)) / len(words), 2)
 
-    # Very simple formality heuristic — ratio of formal words
-    formal_words = {"leverage", "spearheaded", "optimized", "managed", "led",
-                    "developed", "implemented", "collaborated", "strategic", "delivered"}
-    all_words = set(text.lower().split())
-    formality_score = len(formal_words & all_words) / max(len(all_words), 1)
+    # Tone detection
+    action_verbs = {
+        "led", "built", "designed", "architected", "managed", "deployed",
+        "optimized", "scaled", "automated", "created", "spearheaded", "developed"
+    }
+    action_count = sum(1 for w in words if w in action_verbs)
+    action_density = round(action_count / len(words), 3)
 
-    # Top 3-word phrases
-    words = re.findall(r"\b[a-z]{4,}\b", text.lower())
-    phrase_counts: dict[str, int] = {}
-    for i in range(len(words) - 2):
-        phrase = f"{words[i]} {words[i+1]} {words[i+2]}"
-        phrase_counts[phrase] = phrase_counts.get(phrase, 0) + 1
-
-    top_phrases = sorted(phrase_counts, key=phrase_counts.get, reverse=True)[:5]
+    tone = "impactful" if action_density > 0.03 else "balanced"
 
     snapshot = {
-        "avg_words_per_sentence": round(avg_words, 1),
-        "formality_score": round(formality_score, 3),
-        "common_phrases": top_phrases,
-        "sample_sentences": sentences[:3],
+        "avg_sentence_length": avg_sentence_len,
+        "vocabulary_richness": unique_ratio,
+        "action_verb_density": action_density,
+        "primary_tone": tone,
     }
     return json.dumps(snapshot)

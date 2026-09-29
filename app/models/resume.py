@@ -7,12 +7,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.profile import (
+    CertificationEntry,
+    EducationEntry,
+    EmploymentEntry,
+)
 
 # ---------------------------------------------------------------------------
 # Guard: only import Base when SQLAlchemy is needed (avoids import errors
@@ -26,42 +32,6 @@ except Exception:
 
 
 # ── Pydantic config models (used by loader, pipelines, and API) ─────────────
-
-class EmploymentEntry(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    company: str
-    title: str
-    location: str | None = None
-    start: str
-    end: str | None = None
-    current: bool = False
-    bullets: list[str] = Field(default_factory=list)
-    tech: list[str] = Field(default_factory=list)
-
-
-class EducationEntry(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    institution: str
-    degree: str
-    field: str | None = None
-    start_year: int | None = None
-    end_year: int | None = None
-    gpa: float | None = None
-    honors: list[str] = Field(default_factory=list)
-
-
-class CertificationEntry(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    name: str
-    issuer: str | None = None
-    issued: str | None = None
-    expires: str | None = None
-    credential_id: str | None = None
-    url: str | None = None
-
 
 class ProjectEntry(BaseModel):
     model_config = ConfigDict(extra="allow")
@@ -102,6 +72,8 @@ class TailoredResume(BaseModel):
     certifications: list[CertificationEntry] = Field(default_factory=list)
     projects: list[ProjectEntry] = Field(default_factory=list)
     languages: list[str] = Field(default_factory=list)
+    template: str = "generic"
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 # ── SQLAlchemy ORM model (only active when DB is available) ─────────────────

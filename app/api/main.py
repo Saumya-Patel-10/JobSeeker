@@ -1,4 +1,4 @@
-﻿"""FastAPI app entry point."""
+"""FastAPI app entry point."""
 
 from __future__ import annotations
 
@@ -138,3 +138,16 @@ app.include_router(approvals.router)
 app.include_router(sources.router)
 app.include_router(blacklist_api.router)
 app.include_router(ws.router)
+
+# ── Unified SaaS Routers (/api/v1) ─────────────────────────────────────────
+try:
+    from app.api.routes import auth, users, resumes as saas_resumes, jobs as saas_jobs, applications as saas_applications, subscriptions, websocket as saas_ws
+    app.include_router(auth.router,          prefix="/api/v1/auth",          tags=["Auth"])
+    app.include_router(users.router,         prefix="/api/v1/users",         tags=["Users"])
+    app.include_router(saas_resumes.router,  prefix="/api/v1/resumes",       tags=["Resumes (SaaS)"])
+    app.include_router(saas_jobs.router,     prefix="/api/v1/jobs",          tags=["Jobs (SaaS)"])
+    app.include_router(saas_applications.router, prefix="/api/v1/applications", tags=["Applications (SaaS)"])
+    app.include_router(subscriptions.router, prefix="/api/v1/subscriptions", tags=["Subscriptions"])
+    app.include_router(saas_ws.router,       prefix="/ws/v1",                tags=["WebSocket (SaaS)"])
+except Exception as e:
+    log.warning("api.saas_routes_skipped", error=str(e))

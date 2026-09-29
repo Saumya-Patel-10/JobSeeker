@@ -10,8 +10,8 @@ llm:
 browser:
   engine: firefox
   persistent_profile: true
-  profile_source: system
-  firefox_profile: default-release
+  profile_source: managed
+  firefox_profile: null
   headless: false
   slowmo_ms: 50
   profile: default

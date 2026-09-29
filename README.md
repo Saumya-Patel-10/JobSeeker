@@ -1,13 +1,8 @@
-# Job Finding Assistant
+# JobSeeker (v1.1)
 
-A **fully local**, AI-assisted job application agent. Runs on your machine,
-talks to a local LLM (LM Studio by default, Ollama supported), automates the
-boring parts of the apply pipeline, and stops short of clicking Submit unless
-you explicitly opt in.
+An **AI-powered job discovery and application platform** combining a supervised local-first automation console with intelligent resume tailoring, multi-board scraping, and unified cloud workflows. Runs on your machine with local LLMs (LM Studio, Ollama) or cloud providers, automates form filling, and provides full human-in-the-loop control.
 
-> **Status:** v0.1 — works end-to-end on Greenhouse and Lever; LinkedIn is
-> assist-only by design (LinkedIn ToS); generic fallback covers most company
-> pages via Playwright + LLM-classified form filling.
+> **Status:** v1.1 — Integrated Command Center dashboard, multi-source ingestion (Greenhouse, Lever, LinkedIn, Indeed), deterministic Playwright automation, tailored resume/cover letter generation, and unified API runtime.
 
 ## What it does
 

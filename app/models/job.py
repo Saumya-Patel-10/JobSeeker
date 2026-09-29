@@ -11,7 +11,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import ATSSource, ApplicationStatus, RemoteType, JobStatus  # noqa: F401
+from app.models.enums import ATSSource, JobStatus, RemoteType, SalaryPeriod
 
 
 # ── Pydantic domain model (used everywhere in pipelines + API) ───────────────
@@ -19,27 +19,45 @@ from app.models.enums import ATSSource, ApplicationStatus, RemoteType, JobStatus
 class Job(BaseModel):
     """Normalized job posting — produced by every ATS adapter's scrape_job()."""
 
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     id: int | None = None
     title: str
     company: str
     location: str | None = None
-    remote: RemoteType = RemoteType.unknown
-    description: str = ""
+    remote_type: RemoteType = RemoteType.unknown
+    description_text: str = ""
+    description_html: str | None = None
     requirements: str = ""
     salary_min: int | None = None
     salary_max: int | None = None
     salary_currency: str = "USD"
-    salary_period: str = "year"
+    salary_period: SalaryPeriod = SalaryPeriod.year
     ats_source: ATSSource = ATSSource.generic
     source_url: str
+    url_hash: str = ""
     external_id: str | None = None
     keywords: list[str] = Field(default_factory=list)
-    raw: dict[str, Any] = Field(default_factory=dict)
+    raw_payload: dict[str, Any] | None = Field(default_factory=dict)
     status: JobStatus = JobStatus.open
     posted_at: datetime | None = None
-    discovered_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    scraped_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @property
+    def description(self) -> str:
+        return self.description_text
+
+    @property
+    def raw(self) -> dict[str, Any]:
+        return self.raw_payload
+
+    @property
+    def remote(self) -> RemoteType:
+        return self.remote_type
+
+    @property
+    def discovered_at(self) -> datetime:
+        return self.scraped_at
 
 
 # ── SQLAlchemy ORM model ─────────────────────────────────────────────────────

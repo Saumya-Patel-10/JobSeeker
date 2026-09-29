@@ -8,19 +8,19 @@ class Settings(BaseSettings):
     # App
     APP_NAME: str = "JobAIgent"
     APP_ENV: str = "development"
-    SECRET_KEY: str
+    SECRET_KEY: str = "dev-secret-key-change-in-production-1234567890"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
 
-    # Database
-    DATABASE_URL: str
-    SYNC_DATABASE_URL: str
+    # Database (defaults to local SQLite; overridden by PostgreSQL in docker-compose.yml)
+    DATABASE_URL: str = "sqlite+aiosqlite:///./data/jobassist.db"
+    SYNC_DATABASE_URL: str = "sqlite:///./data/jobassist.db"
 
     # Redis / Celery
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # OpenAI
-    OPENAI_API_KEY: str
+    OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-4o"
 
     # AWS S3

@@ -10,13 +10,19 @@ import json
 import io
 from typing import Optional
 
-from openai import AsyncOpenAI
-from docx import Document
+try:
+    from openai import AsyncOpenAI
+    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY or "dummy-key")
+except Exception:
+    AsyncOpenAI = None
+    client = None
+
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from app.core.config import settings
-
-client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+try:
+    from docx import Document
+except ImportError:
+    Document = None
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
