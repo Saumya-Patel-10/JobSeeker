@@ -35,39 +35,50 @@ automation:
 scoring:
   weights:
     skill_overlap: 0.35
-    seniority_alignment: 0.2
-    salary_fit: 0.15
+    seniority_alignment: 0.15
+    salary_fit: 0.10
     location_compatibility: 0.15
-    fit_score: 0.15
-seniority: mid
+    fit_score: 0.20
+seniority: null
 locations:
 - Austin, TX
+- Dallas, TX
+- Richardson, TX
 - Remote (US)
+- Anywhere
 role_keywords:
-- backend
-- platform
-- infrastructure
+- software engineer
+- software developer
+- frontend engineer
+- frontend developer
+- backend engineer
+- backend developer
+- full stack engineer
+- full stack developer
+- fullstack
+- ai engineer
+- ai developer
+- machine learning engineer
+- ml engineer
+- artificial intelligence
+- web developer
+- python developer
+- react developer
 - distributed systems
-- python
-- cloud
-- security
+- cloud engineer
+- platform engineer
 - devops
 excluded_keywords:
 - unpaid
 - commission only
 excluded_titles:
-- intern
-- internship
-- junior
-- jr.
 - staff augmentation
 - contractor only
-- part-time
 preferred_industries: []
 target_companies: []
 remote_preference: no_preference
 salary_expectations:
-  min: 110000
-  max: 130000
+  min: null
+  max: null
   currency: USD
   period: year
