@@ -52,7 +52,15 @@ def call_llm(prompt: str) -> str:
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.2,
-        "response_format": {"type": "json_object"},
+        # LM Studio only accepts "json_schema" or "text" (not "json_object").
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "response",
+                "schema": {"type": "object"},
+                "strict": False,
+            },
+        },
     }
 
     with httpx.Client(timeout=120) as client:
