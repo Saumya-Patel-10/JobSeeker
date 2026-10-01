@@ -8,6 +8,7 @@ non-standard installs (e.g., running from a packaged wheel).
 from __future__ import annotations
 
 import os
+import shutil
 from pathlib import Path
 
 PROJECT_ROOT: Path = Path(os.environ.get("JOBASSIST_ROOT", Path(__file__).resolve().parents[2]))
@@ -57,5 +58,16 @@ def ensure_data_dirs() -> None:
 
 
 def user_config_path(name: str) -> Path:
-    """Resolve a user-editable config file inside ``config/``."""
-    return CONFIG_DIR / name
+    """Resolve a user-editable config file inside ``config/``.
+
+    Personal files (``profile.yaml``, ``preferences.yaml``,
+    ``resume_master.json``) are git-ignored; only ``<name>.example`` templates
+    are committed. If the real file is missing, it is created from its
+    template on first access so a fresh clone works out of the box.
+    """
+    target = CONFIG_DIR / name
+    if not target.exists():
+        template = CONFIG_DIR / f"{name}.example"
+        if template.exists():
+            shutil.copyfile(template, target)
+    return target

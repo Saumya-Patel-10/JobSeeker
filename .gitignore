@@ -94,9 +94,11 @@ data/*.db-journal
 data/*.db-wal
 data/*.db-shm
 
-# User-edited configs may contain personal data; the user copies templates
-# from config/ on `init` then edits in place. We keep the templates checked
-# in but ignore the *.local.* variant if used.
+# Personal configs - never commit. The committed templates are
+# config/*.example; they are copied to the real files on first run.
+config/profile.yaml
+config/preferences.yaml
+config/resume_master.json
 config/*.local.*
 
 # Cursor

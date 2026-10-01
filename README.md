@@ -74,6 +74,10 @@ python -m app.cli.main init
 - `config/resume_master.json` — your real career data.
 - `config/preferences.yaml` — LLM provider, scoring weights, browser config.
 
+These three files hold personal data and are **git-ignored**. Only the
+`config/*.example` templates are committed; the real files are created from
+them automatically the first time the app runs, so just edit the copies.
+
 ### 3. Start a local LLM
 
 - LM Studio: Developer mode → Start server on port 1234 → load any chat
