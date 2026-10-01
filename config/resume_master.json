@@ -1,84 +1,54 @@
 {
-  "headline": "Cloud and Infrastructure Engineer | Security and DevOps",
-  "summary": "Cloud and infrastructure focused computer science student with experience in AWS automation, security hardening, and virtualization. Built SIEM analytics pipelines, automated infrastructure with Terraform and Ansible, and supported enterprise identity and networking operations. Interested in cloud, security, and infrastructure roles.",
+  "headline": "Software Engineer | Backend Systems and AI-Assisted Engineering",
+  "summary": "Software engineer building reliable, secure systems end-to-end, from a graph-based fraud-detection pipeline to fault-tolerant backend services, now applying that experience as a Web Developer at Tomorrow's Leaders Today. Fluent in Java, Python, C++, and JavaScript, with hands-on experience in AI-assisted engineering workflows (Claude Code, Claude API, MCP). Seeking a Software Development Engineer internship building scalable, customer-facing systems.",
   "skills": [
-    "AWS",
-    "Azure",
-    "Google Cloud (Firebase)",
-    "Terraform",
-    "Ansible",
-    "Jenkins",
-    "Docker",
-    "CI/CD",
-    "VMware ESXi",
-    "vCenter",
-    "Citrix XenServer",
-    "Proxmox",
-    "Windows Server",
-    "OpenSCAP",
-    "RBAC",
-    "IAM",
-    "Firestore Security Rules",
-    "Secrets Management",
-    "MITRE ATT&CK",
-    "Python",
     "Java",
+    "Python",
     "C++",
-    "TypeScript",
-    "SQL Server",
-    "T-SQL",
-    "Azure SQL",
+    "JavaScript (ES6+)",
+    "HTML5",
+    "CSS3",
+    "Data Structures & Algorithms",
+    "OOP",
+    "RESTful APIs",
+    "Graph Algorithms",
+    "Multithreading & Concurrency",
+    "SQL",
+    "NoSQL",
+    "Agile/Scrum",
+    "React",
+    "Flask",
+    "Spring Boot",
+    "Node.js",
+    "cpp-httplib",
+    "NetworkX",
+    "scikit-learn",
+    "Neo4j",
+    "Streamlit",
+    "pandas",
+    "Git",
+    "GitHub",
+    "VS Code",
+    "Claude Code",
     "MySQL",
-    "VPCs",
-    "Subnets",
-    "Routing",
-    "DNS",
-    "Active Directory",
-    "Next.js",
-    "Firebase"
+    "Anthropic Claude API",
+    "MCP",
+    "Google Calendar API",
+    "OAuth 2.0"
   ],
   "employment": [
     {
-      "company": "US Anesthesia Partners",
-      "title": "SQL Server and Azure Intern",
-      "location": null,
-      "start": "2026-04",
+      "company": "Tomorrow's Leaders Today",
+      "title": "Web Developer",
+      "location": "Frisco, TX",
+      "start": "2026-09",
       "end": null,
       "current": true,
       "bullets": [
-        "Developed and optimized T-SQL queries and stored procedures, improving data retrieval efficiency across relational datasets.",
-        "Performed database maintenance tasks including indexing, backups, and performance tuning to ensure reliability and scalability.",
-        "Supported Azure data migrations and built ETL pipelines using Azure SQL and related services."
+        "Shaped user experience and information architecture for the web platform, reworking navigation and page structure, mapping user journeys, and sharpening calls-to-action to make the site more intuitive to use, as part of a hands-on, project-based leadership program.",
+        "Also pitched in on the front-end/responsive-design, QA/performance, and AI-workflow/documentation teams as needed, helping with responsive layout fixes, accessibility and cross-browser testing, and documentation for TLT's AI-assisted workflows."
       ],
-      "tech": ["T-SQL", "SQL Server", "Azure", "ETL"]
-    },
-    {
-      "company": "Every City Church",
-      "title": "Freelance Engineer",
-      "location": null,
-      "start": "2025-05",
-      "end": "2026-05",
-      "current": false,
-      "bullets": [
-        "Led migration from WordPress on Bluehost to a serverless Next.js + Firebase architecture across AWS and GCP, managing DNS, SSL, and production cutover.",
-        "Designed branch-based CI/CD pipelines with isolated dev/prod environments enabling zero-downtime deployments.",
-        "Engineered secure architecture using Firestore RBAC, centralized secrets management with GCP Secret Manager, and SSR/SSG caching optimizations, reducing database operations by about 30%."
-      ],
-      "tech": ["Next.js", "Firebase", "AWS", "GCP", "CI/CD", "Route 53"]
-    },
-    {
-      "company": "Dallas County",
-      "title": "IT Intern - Technician",
-      "location": null,
-      "start": "2025-05",
-      "end": "2026-04",
-      "current": false,
-      "bullets": [
-        "Administered Active Directory lifecycle management, including provisioning, deprovisioning, and role-based access control across enterprise systems.",
-        "Resolved Tier 2/3 infrastructure issues across county offices, troubleshooting identity, endpoint, and network configuration failures.",
-        "Managed hardware deployment, inventory tracking, and enterprise software licensing across multiple locations."
-      ],
-      "tech": ["Active Directory", "RBAC", "Windows", "Networking"]
+      "tech": ["UX", "Information Architecture", "Responsive Design", "Accessibility", "Cross-Browser Testing"]
     }
   ],
   "education": [
@@ -86,170 +56,92 @@
       "institution": "The University of Texas at Dallas",
       "degree": "B.S. Computer Science",
       "field": "Computer Science",
-      "start_year": 2022,
-      "end_year": 2026,
-      "gpa": 3.0,
-      "honors": [
-        "Cyber Defense Certificate",
-        "Relevant courses: Digital Forensics, Computer Network Security, Data and Application Security, Computer Networks"
-      ]
+      "start_year": 2024,
+      "end_year": 2028,
+      "gpa": null,
+      "honors": []
     }
   ],
   "certifications": [
     {
-      "name": "Introduction to Networking and Cloud Computing",
-      "issuer": "Microsoft via Coursera",
-      "issued": "2024-02-04",
-      "credential_id": "P73MLWCUWX7N",
-      "url": "https://coursera.org/verify/P73MLWCUWX7N"
-    },
-    {
-      "name": "Microsoft Office Specialist for Office Outlook 2016",
-      "issuer": "Microsoft",
-      "issued": "2019-01-24",
-      "credential_id": "X6YT-TSFQ-ZQ",
-      "url": "https://verify.certiport.com"
-    },
-    {
-      "name": "Microsoft Office Specialist for Office Word 2016",
-      "issuer": "Microsoft",
-      "issued": "2019-02-06",
-      "credential_id": "3CQP-6JS1-O",
-      "url": "https://verify.certiport.com"
-    },
-    {
-      "name": "Mobility and Device Fundamentals",
-      "issuer": "Microsoft",
-      "issued": "2021-04-30",
-      "credential_id": "wMWpC-H9x6",
-      "url": "https://verify.certiport.com"
-    },
-    {
-      "name": "Networking Fundamentals",
-      "issuer": "Microsoft",
-      "issued": "2019-12-16",
-      "credential_id": "mEYJ-DTh4",
-      "url": "https://verify.certiport.com"
-    },
-    {
-      "name": "Security Fundamentals",
-      "issuer": "Microsoft",
-      "issued": "2021-12-07",
-      "credential_id": "PTHT-uGHM",
-      "url": "https://verify.certiport.com"
-    },
-    {
-      "name": "Certified PC Pro",
-      "issuer": "TestOut",
-      "issued": "2021-05-18",
-      "credential_id": "Certificate ID: 6-1C6-C6JDN; Candidate ID: 6-U6-46K6",
+      "name": "AI for Data Analysis",
+      "issuer": "Google",
+      "issued": null,
+      "credential_id": null,
       "url": null
     },
     {
-      "name": "Windows Operating System Fundamentals",
-      "issuer": "Microsoft",
-      "issued": "2020-11-18",
-      "credential_id": "wMnuT-Hay6",
-      "url": "https://verify.certiport.com"
-    },
-    {
-      "name": "AWS Certified Cloud Practitioner",
-      "issuer": "Amazon Web Services",
-      "issued": "2026-01-07",
-      "credential_id": "4c352af5248a41d08d64b5db89683ecb",
-      "url": "https://aws.amazon.com/verification"
-    },
-    {
-      "name": "CodePath Intro to Cybersecurity",
-      "issuer": "CodePath",
-      "issued": "Spring 2023",
-      "credential_id": "143660",
+      "name": "AI for App Building",
+      "issuer": "Google",
+      "issued": null,
+      "credential_id": null,
       "url": null
     },
     {
-      "name": "CompTIA Security+",
-      "issuer": "CompTIA",
-      "issued": "2025-11-28",
-      "expires": "2028-11-28",
-      "credential_id": "cfd47fcbebc44186b0766c21db1bdfd0; Candidate ID: COMP001022882921",
-      "url": "http://verify.CompTIA.org"
+      "name": "Introduction to Model Context Protocol",
+      "issuer": "Anthropic",
+      "issued": null,
+      "credential_id": null,
+      "url": null
     },
     {
-      "name": "Technical Support Fundamentals",
-      "issuer": "Google via Coursera",
-      "issued": "2021-10-30",
-      "credential_id": "YLCD8BZGUZ64",
-      "url": "https://coursera.org/verify/YLCD8BZGUZ64"
+      "name": "Building with the Claude API",
+      "issuer": "Anthropic",
+      "issued": null,
+      "credential_id": null,
+      "url": null
     },
     {
-      "name": "Introduction to Computers and Operating Systems and Security",
-      "issuer": "Microsoft via Coursera",
-      "issued": "2024-01-15",
-      "credential_id": "475DEKNNUP4U",
-      "url": "https://coursera.org/verify/475DEKNNUP4U"
+      "name": "Introduction to Agent Skills",
+      "issuer": "Anthropic",
+      "issued": null,
+      "credential_id": null,
+      "url": null
+    },
+    {
+      "name": "Model Context Protocol: Advanced Topics",
+      "issuer": "Anthropic",
+      "issued": null,
+      "credential_id": null,
+      "url": null
     }
   ],
   "projects": [
     {
-      "name": "CometSentinal",
-      "description": "AI-powered SIEM analytics platform for log-based threat detection.",
-      "tech": ["Python", "LLM", "MITRE ATT&CK", "CVE", "Security Analytics"],
+      "name": "Return-Fraud & Wardrobing Detection Pipeline",
+      "description": "Graph-based fraud-detection pipeline that catches coordinated return-fraud rings.",
+      "tech": ["Graph Analytics", "Python", "NetworkX", "scikit-learn", "Neo4j", "Flask", "pyvis"],
       "url": null,
       "bullets": [
-        "Built an AI-powered security analytics platform processing log data to detect 32 threats across 13+ datasets.",
-        "Designed a multi-stage LLM pipeline with MITRE ATT&CK and CVE enrichment, achieving about 80-90% detection accuracy.",
-        "Reduced analysis latency by about 85% (2 min to 15-20 sec) through pipeline optimization and efficient data processing."
+        "Engineered a scalable, graph-based fraud-detection pipeline (Python, NetworkX, scikit-learn, Neo4j) that models customers, addresses, payment fingerprints, and items as a connected graph to catch coordinated fraud rings that evade standard per-transaction rule thresholds.",
+        "Designed a two-layer risk-scoring architecture, with Louvain community detection surfacing structurally linked account clusters, fused with an unsupervised Isolation Forest anomaly score.",
+        "Shipped a Flask + pyvis review dashboard that outperformed a rule-based baseline on precision and recall while keeping raw PII out of the system via SHA-256-hashed addresses and minimized payment data."
       ]
     },
     {
-      "name": "TexSAW Capture the Flag (First Place)",
-      "description": "University CTF competition focused on security challenges.",
-      "tech": ["Ghidra", "John the Ripper", "CTF", "Cryptography"],
+      "name": "Blackboard Student Assistant",
+      "description": "Manifest V3 Chrome extension for UT Dallas's Blackboard Learn (Ultra and Classic).",
+      "tech": ["JavaScript", "Chrome Extension (Manifest V3)", "Google Calendar API", "OAuth 2.0", "pdf.js", "mammoth.js"],
       "url": null,
       "bullets": [
-        "Secured first place in the university division for two consecutive years, outperforming 500+ teams.",
-        "Used tools like John the Ripper, Ghidra, and online cipher cracking tools to solve CTF challenges.",
-        "Achieved a career-high ranking of 30th worldwide in 2026 among 500 teams."
+        "Built a Manifest V3 Chrome extension that performs live DOM scraping to surface grades, GPA impact, and assignment deadlines without requiring API credentials.",
+        "Developed a grade calculator engine that computes the minimum score needed on remaining assignments to hit a user-defined target grade.",
+        "Integrated Google Calendar OAuth 2.0 to auto-sync deadlines as reminders.",
+        "Built a local PDF/DOCX syllabus parser (pdf.js, mammoth.js) requiring zero manual input."
       ]
     },
     {
-      "name": "AWS Cloud Infrastructure Automation Lab",
-      "description": "Automated AWS infrastructure provisioning and compliance hardening.",
-      "tech": ["AWS", "Terraform", "Jenkins", "Docker", "Ansible", "OpenSCAP", "CI/CD", "Linux"],
+      "name": "Rate Limiter Library",
+      "description": "Python library implementing four rate-limiting algorithms behind one common interface.",
+      "tech": ["Python", "Systems Design", "matplotlib"],
       "url": null,
       "bullets": [
-        "Designed and deployed automated AWS infrastructure environments using Terraform, Jenkins, Docker, and Ansible.",
-        "Provisioned and managed EC2, IAM, S3, VPCs, subnets, route tables, security groups, and networking configurations.",
-        "Built CI/CD pipelines for automated provisioning and configuration management workflows.",
-        "Hardened Linux EC2 environments using OpenSCAP compliance scans and automated baselines.",
-        "Implemented IaC best practices using reusable Terraform modules and version-controlled deployments."
-      ]
-    },
-    {
-      "name": "Lab Setup (VMware and Citrix Cloud)",
-      "description": "Enterprise-style on-prem lab across Dell PowerEdge servers.",
-      "tech": ["VMware ESXi", "vCenter", "Citrix XenServer", "Windows Server", "Active Directory", "DNS", "DHCP", "RAID"],
-      "url": null,
-      "bullets": [
-        "Built an on-prem lab across three Dell PowerEdge servers with RAID 0/1/5 storage configurations.",
-        "Deployed VMware ESXi and vCenter for centralized virtualization and resource orchestration.",
-        "Configured Windows Server 2019 with Active Directory, DNS, and DHCP.",
-        "Implemented Citrix XenServer and XenDesktop for VDI provisioning and virtual app delivery."
-      ]
-    },
-    {
-      "name": "Library Catalog Project",
-      "description": "Full-stack library catalog web app with team collaboration.",
-      "tech": ["Next.js", "tRPC", "Drizzle", "Clerk", "Tailwind", "MySQL", "TypeScript", "ZeroTier"],
-      "url": null,
-      "bullets": [
-        "Managed an 8-person team across frontend, backend, database, and middleware tasks.",
-        "Built a MySQL-backed web interface for book search and check-in/check-out.",
-        "Created a T3 Stack app (Next.js, tRPC, Drizzle, Clerk, Tailwind) pulling data from MySQL.",
-        "Created a virtual network using ZeroTier for team collaboration and concurrent development."
+        "Implemented four production-grade rate-limiting algorithms (Fixed Window, Sliding Window Log, Sliding Window Counter, Token Bucket) behind one common interface, driven entirely by caller-supplied timestamps for full determinism and reproducible unit testing.",
+        "Built steady, bursty, and adversarial traffic generators plus a matplotlib benchmarking harness measuring correctness and peak memory.",
+        "Showed Fixed Window leaks up to 2.00x its limit under adversarial traffic, while Sliding Window Counter matched Sliding Window Log's accuracy at a fraction of the memory cost."
       ]
     }
   ],
   "publications": [],
-  "languages": ["English (Native)", "Hindi (Native)"]
+  "languages": ["English", "Hindi", "Gujarati", "Marathi"]
 }
