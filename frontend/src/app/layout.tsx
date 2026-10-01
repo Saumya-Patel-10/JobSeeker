@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { AppShell } from "@/components/layout/app-shell";
 import { appName } from "@/lib/env";
 import { AppProviders } from "@/providers/app-providers";
 import "./globals.css";
@@ -17,8 +16,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: appName,
-  description: "AI Job Application Operations Console",
+  title: {
+    default: `${appName} - AI job search, tailored and automated`,
+    template: `%s | ${appName}`,
+  },
+  description:
+    "Find new openings, match them against your resume, tailor it for each role, and apply - with you in control.",
 };
 
 export default function RootLayout({
@@ -32,10 +35,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
-        <AppProviders>
-          <AppShell>{children}</AppShell>
-        </AppProviders>
+      <body className="min-h-full">
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

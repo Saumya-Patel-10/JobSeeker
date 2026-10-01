@@ -1,299 +1,541 @@
 "use client"
 
 import Link from "next/link"
-import { Activity, BriefcaseBusiness, Clock3, FileText, Inbox } from "lucide-react"
-import { motion } from "framer-motion"
+import { useMemo } from "react"
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
+  ArrowRight,
+  BriefcaseBusiness,
+  CirclePause,
+  CirclePlay,
+  ClipboardCheck,
+  Inbox,
+  Play,
+  Send,
+  Square,
+} from "lucide-react"
+import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts"
+import { toast } from "sonner"
 
 import { ChartContainer } from "@/components/charts/chart-container"
 import { PageHeader } from "@/components/layout/page-header"
 import { MetricCard } from "@/components/primitives/metric-card"
-import { PipelineStepper } from "@/components/workflow/pipeline-stepper"
 import { ScoreBadge } from "@/components/workflow/score-badge"
 import { StatusPill } from "@/components/workflow/status-pill"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
-  useAIActivity,
-  useAISummary,
   useAnalyticsSummary,
   useApplications,
-  useAutomationOverview,
-  useJobs,
+  useApproveCheckpoint,
+  useControlCenterActivity,
+  useJobHuntStatus,
+  usePauseJobHunt,
+  usePendingApprovals,
+  useResumeJobHunt,
+  useSettings,
+  useStartJobHunt,
   useStatus,
+  useStopJobHunt,
 } from "@/hooks/use-console-queries"
+import { cn } from "@/lib/utils"
+import type { JobHuntMode, PipelineStage, RemotePreference } from "@/types/api"
 import { formatRelative } from "@/utils/format"
+
+interface SavedPreferences {
+  role_keywords?: string[]
+  target_companies?: string[]
+  locations?: string[]
+  remote_preference?: RemotePreference
+  apply?: { daily_limit?: number }
+}
+
+const stageLabel: Record<PipelineStage, string> = {
+  idle: "Idle",
+  discovering: "Discovering jobs",
+  ingesting: "Reading postings",
+  filtering: "Filtering",
+  scoring: "Scoring fit",
+  tailoring: "Tailoring resume",
+  preparing: "Filling application",
+  awaiting_approval: "Waiting for your approval",
+  submitting: "Submitting",
+  cooldown: "Cooling down",
+  sleeping: "Sleeping until next run",
+}
+
+const modeLabel: Record<JobHuntMode, string> = {
+  manual_review: "Manual review",
+  assisted_apply: "Assisted",
+  autonomous_apply: "Autonomous",
+  linkedin_assist: "LinkedIn assist",
+}
+
+function isToday(value: string | null | undefined) {
+  if (!value) return false
+  const date = new Date(value)
+  const now = new Date()
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  )
+}
+
+function Section({
+  title,
+  action,
+  children,
+  className,
+}: {
+  title: string
+  action?: React.ReactNode
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <section className={cn("panel", className)}>
+      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <h2 className="text-sm font-semibold">{title}</h2>
+        {action}
+      </div>
+      <div className="p-4">{children}</div>
+    </section>
+  )
+}
+
+function EmptyState({ icon, title, hint }: { icon: React.ReactNode; title: string; hint: string }) {
+  return (
+    <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
+      <span className="flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        {icon}
+      </span>
+      <p className="text-sm font-medium">{title}</p>
+      <p className="max-w-xs text-xs text-muted-foreground">{hint}</p>
+    </div>
+  )
+}
+
+function HuntControls() {
+  const huntStatus = useJobHuntStatus()
+  const settings = useSettings()
+  const startHunt = useStartJobHunt()
+  const pauseHunt = usePauseJobHunt()
+  const resumeHunt = useResumeJobHunt()
+  const stopHunt = useStopJobHunt()
+
+  const name = huntStatus.data?.status ?? "idle"
+  const isPaused = name === "paused"
+  const canStart = name === "idle" || name === "stopped" || name === "error"
+
+  async function handleStart() {
+    const prefs = (settings.data?.preferences ?? {}) as SavedPreferences
+    try {
+      await startHunt.mutateAsync({
+        mode: "manual_review",
+        run_once: true,
+        interval_minutes: null,
+        discovery: {
+          urls: [],
+          keywords: prefs.role_keywords ?? [],
+          companies: prefs.target_companies ?? [],
+          locations: prefs.locations ?? [],
+          remote_preference: prefs.remote_preference ?? "no_preference",
+          limit_per_source: 25,
+          run_search: true,
+        },
+      })
+      toast.success("Job hunt started")
+    } catch {
+      toast.error("Could not start the hunt. Is the backend running?")
+    }
+  }
+
+  async function handlePauseResume() {
+    try {
+      if (isPaused) {
+        await resumeHunt.mutateAsync()
+        toast.success("Job hunt resumed")
+      } else {
+        await pauseHunt.mutateAsync()
+        toast.success("Job hunt paused")
+      }
+    } catch {
+      toast.error("Action failed")
+    }
+  }
+
+  async function handleStop() {
+    try {
+      await stopHunt.mutateAsync()
+      toast.success("Job hunt stopped")
+    } catch {
+      toast.error("Action failed")
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {canStart ? (
+        <Button className="h-9 gap-1.5 px-4" onClick={handleStart} disabled={startHunt.isPending}>
+          <Play className="size-4" />
+          {startHunt.isPending ? "Starting..." : "Start hunt"}
+        </Button>
+      ) : (
+        <>
+          <Button variant="outline" className="h-9 gap-1.5 px-3" onClick={handlePauseResume}>
+            {isPaused ? <CirclePlay className="size-4" /> : <CirclePause className="size-4" />}
+            {isPaused ? "Resume" : "Pause"}
+          </Button>
+          <Button variant="outline" className="h-9 gap-1.5 px-3" onClick={handleStop}>
+            <Square className="size-4" />
+            Stop
+          </Button>
+        </>
+      )}
+      <Link
+        href="/control-center"
+        className={cn(buttonVariants({ variant: "ghost" }), "h-9 px-3 text-muted-foreground")}
+      >
+        Configure
+      </Link>
+    </div>
+  )
+}
+
+function HuntStatusCard() {
+  const huntStatus = useJobHuntStatus()
+  const data = huntStatus.data
+  const name = data?.status ?? "idle"
+  const active = name === "running" || name === "paused"
+  const stage = data?.stage ?? "idle"
+  const stats = data?.stats
+
+  const counters = [
+    { label: "Seen", value: stats?.jobs_seen ?? 0 },
+    { label: "Scored", value: stats?.jobs_analyzed ?? 0 },
+    { label: "Tailored", value: stats?.resumes_generated ?? 0 },
+    { label: "Prepared", value: stats?.applications_prepared ?? stats?.applications_attempted ?? 0 },
+    { label: "Submitted", value: stats?.applications_submitted ?? 0 },
+  ]
+
+  return (
+    <section className="panel p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 space-y-1.5">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold">Job hunt</h2>
+            <StatusPill status={name} />
+            {data?.mode ? (
+              <span className="text-xs text-muted-foreground">{modeLabel[data.mode]}</span>
+            ) : null}
+          </div>
+          <p className="truncate text-sm text-muted-foreground">
+            {active
+              ? data?.current_job_title
+                ? `${stageLabel[stage]}: ${data.current_job_title}${data.current_company ? ` at ${data.current_company}` : ""}`
+                : stageLabel[stage]
+              : "Nothing running. Start a hunt to discover, score, and prepare applications."}
+          </p>
+          {data?.last_error ? (
+            <p className="text-xs text-destructive">Last error: {data.last_error}</p>
+          ) : null}
+        </div>
+        <HuntControls />
+      </div>
+
+      <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-5">
+        {counters.map((counter) => (
+          <div key={counter.label} className="bg-card px-4 py-3">
+            <dt className="text-xs text-muted-foreground">{counter.label}</dt>
+            <dd className="mt-0.5 text-lg font-semibold tabular">{counter.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )
+}
 
 export function DashboardPage() {
   const analytics = useAnalyticsSummary()
-  const applications = useApplications({ limit: 20 })
-  const jobs = useJobs({ limit: 12 })
-  const automation = useAutomationOverview()
-  const aiSummary = useAISummary(250)
-  const aiActivity = useAIActivity(30)
+  const applications = useApplications({ limit: 200 })
+  const approvals = usePendingApprovals()
+  const activity = useControlCenterActivity(10)
   const status = useStatus()
+  const settings = useSettings()
+  const approve = useApproveCheckpoint()
+
+  const dailyLimit = ((settings.data?.preferences ?? {}) as SavedPreferences).apply?.daily_limit ?? 20
+  const submittedToday = useMemo(
+    () => (applications.data ?? []).filter((a) => isToday(a.submitted_at)).length,
+    [applications.data]
+  )
+  const quotaPct = Math.min(100, Math.round((submittedToday / Math.max(1, dailyLimit)) * 100))
+  const pending = approvals.data ?? []
+  const recent = (applications.data ?? []).slice(0, 7)
+
+  const health = [
+    { label: "Backend", ok: Boolean(status.data?.healthy), okText: "Connected", badText: "Offline" },
+    {
+      label: "Language model",
+      ok: Boolean(status.data?.llm_reachable),
+      okText: status.data?.llm_provider ?? "Online",
+      badText: "Not reachable",
+    },
+    {
+      label: "Browser session",
+      ok: Boolean(status.data?.browser_profile_has_cookies),
+      okText: "Logged-in session ready",
+      badText: "No saved logins",
+    },
+    {
+      label: "Database",
+      ok: Boolean(status.data?.db_exists),
+      okText: "Ready",
+      badText: "Missing",
+    },
+  ]
+
+  async function handleApprove(id: number) {
+    try {
+      await approve.mutateAsync({ id, submit: false })
+      toast.success("Approved")
+    } catch {
+      toast.error("Could not approve this application")
+    }
+  }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <PageHeader
-        title="Operations Dashboard"
-        description="Centralized view of ingestion, AI analysis, resume generation, and approval queues."
-        right={<PipelineStepper current={1} compact />}
+        title="Dashboard"
+        description="What your assistant found, prepared, and sent."
       />
 
+      <HuntStatusCard />
+
       <section className="data-grid">
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-          <MetricCard
-            label="Jobs Ingested Today"
-            value={analytics.data?.jobs_ingested_today ?? "—"}
-            icon={<BriefcaseBusiness className="size-4" />}
-          />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <MetricCard
-            label="Pending Review"
-            value={analytics.data?.applications_pending_review ?? "—"}
-            icon={<Inbox className="size-4" />}
-          />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <MetricCard
-            label="Active Automation Sessions"
-            value={automation.data?.active_sessions ?? "—"}
-            icon={<Activity className="size-4" />}
-            hint={`Recent screenshots: ${automation.data?.recent_screenshots.length ?? 0}`}
-          />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <MetricCard
-            label="AI Activity (24h window)"
-            value={aiSummary.data?.total_entries ?? "—"}
-            icon={<Clock3 className="size-4" />}
-            hint={
-              aiSummary.data?.avg_latency_ms != null
-                ? `Avg latency ${aiSummary.data.avg_latency_ms} ms`
-                : "No latency samples yet"
-            }
-          />
-        </motion.div>
-      </section>
-
-      <section className="panel p-4">
-        <h3 className="mb-3 text-sm font-semibold">Runtime Health</h3>
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-lg border border-border/70 p-3">
-            <p className="text-xs text-muted-foreground">Backend</p>
-            <p className="text-sm font-medium">{status.data?.healthy ? "reachable" : "offline"}</p>
-          </div>
-          <div className="rounded-lg border border-border/70 p-3">
-            <p className="text-xs text-muted-foreground">LLM</p>
-            <p className="text-sm font-medium">
-              {status.data?.llm_reachable ? "reachable" : "not reachable"}
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/70 p-3">
-            <p className="text-xs text-muted-foreground">Browser Session</p>
-            <p className="text-sm font-medium">
-              {status.data?.browser_profile_has_cookies ? "cookie session ready" : "needs login"}
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/70 p-3">
-            <p className="text-xs text-muted-foreground">Database</p>
-            <p className="text-sm font-medium">{status.data?.db_exists ? "ready" : "missing"}</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-3">
-        <article className="panel p-4 xl:col-span-2">
+        <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Application Funnel</h3>
-            <span className="text-xs text-muted-foreground">
-              Total {analytics.data?.total_applications ?? 0}
-            </span>
+            <p className="text-sm text-muted-foreground">Submitted today</p>
+            <Send className="size-4 text-muted-foreground" />
           </div>
-          <ChartContainer>
-            <BarChart data={analytics.data?.funnel ?? []}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.15} />
-              <XAxis dataKey="stage" tick={{ fontSize: 12 }} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Bar dataKey="count" radius={[6, 6, 0, 0]} fill="var(--color-chart-1)" />
-            </BarChart>
-          </ChartContainer>
-        </article>
-
-        <article className="panel p-4">
-          <h3 className="mb-3 text-sm font-semibold">Score Distribution</h3>
-          <div className="space-y-2">
-            {analytics.data?.score_distribution.map((bucket) => (
-              <div key={bucket.label} className="flex items-center justify-between rounded-lg bg-muted/30 p-2">
-                <span className="text-xs text-muted-foreground">{bucket.label}</span>
-                <span className="text-sm font-medium">{bucket.count}</span>
-              </div>
-            ))}
+          <p className="text-2xl font-semibold tracking-tight tabular">
+            {submittedToday}
+            <span className="text-base font-normal text-muted-foreground"> / {dailyLimit}</span>
+          </p>
+          <div
+            className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"
+            role="progressbar"
+            aria-label="Daily application limit used"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={quotaPct}
+          >
+            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${quotaPct}%` }} />
           </div>
-        </article>
+        </div>
+        <MetricCard
+          label="Needs your review"
+          value={pending.length}
+          icon={<ClipboardCheck className="size-4" />}
+          hint={pending.length ? "Open Applications to approve" : "You are all caught up"}
+        />
+        <MetricCard
+          label="Jobs found today"
+          value={analytics.data?.jobs_ingested_today ?? "-"}
+          icon={<BriefcaseBusiness className="size-4" />}
+          hint={`${analytics.data?.total_jobs ?? 0} jobs in total`}
+        />
+        <MetricCard
+          label="Total applications"
+          value={analytics.data?.total_applications ?? "-"}
+          icon={<Inbox className="size-4" />}
+          hint="All time"
+        />
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-2">
-        <article className="panel p-4">
-          <h3 className="mb-3 text-sm font-semibold">Ingestion and Submission Timeline</h3>
-          <ChartContainer>
-            <AreaChart data={analytics.data?.timeline_14d ?? []}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.12} />
-              <XAxis dataKey="day" tick={{ fontSize: 11 }} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Area
-                type="monotone"
-                dataKey="jobs"
-                stackId="a"
-                stroke="var(--color-chart-2)"
-                fill="var(--color-chart-2)"
-                fillOpacity={0.35}
-              />
-              <Area
-                  type="monotone"
-                  dataKey="applications"
-                  stackId="a"
-                  stroke="var(--color-chart-3)"
-                  fill="var(--color-chart-3)"
-                  fillOpacity={0.35}
-                />
-            </AreaChart>
-          </ChartContainer>
-        </article>
-
-        <article className="panel p-4">
-          <h3 className="mb-3 text-sm font-semibold">Recent AI Activity</h3>
-          <div className="space-y-2">
-            {aiActivity.data?.slice(0, 8).map((entry) => (
-              <div key={`${entry.timestamp}-${entry.event}`} className="rounded-lg border border-border/70 p-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{entry.event}</span>
-                  <span className="text-[11px] text-muted-foreground">{formatRelative(entry.timestamp)}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">{entry.logger}</p>
-              </div>
-            ))}
-            {!aiActivity.data?.length ? (
-              <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-                No AI activity yet. Run ingestion/analyze/tailor to start traces.
-              </p>
-            ) : null}
-          </div>
-        </article>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-2">
-        <article className="panel p-4">
-          <h3 className="mb-3 text-sm font-semibold">Recent Jobs</h3>
-          <div className="space-y-2">
-            {jobs.data?.slice(0, 8).map((job) => (
-              <div key={job.id} className="flex items-center justify-between rounded-lg border border-border/70 p-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{job.title}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {job.company} · {job.location ?? "Location n/a"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusPill status={job.status} />
-                  <span className="text-[11px] text-muted-foreground">{job.ats_source}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="panel p-4">
-          <h3 className="mb-3 text-sm font-semibold">Pending Review Queue</h3>
-          <div className="space-y-2">
-            {applications.data?.map((application) => (
-              <div
-                key={application.id}
-                className="flex items-center justify-between rounded-lg border border-border/70 p-2"
+      <div className="grid gap-6 xl:grid-cols-3">
+        <div className="space-y-6 xl:col-span-2">
+          <Section
+            title="Needs your review"
+            action={
+              <Link
+                href="/review-queue"
+                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
               >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{application.job_title ?? `Job #${application.job_id}`}</p>
-                  <p className="text-xs text-muted-foreground">Application #{application.id}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusPill status={application.status} />
-                  <ScoreBadge score={application.status === "submitted" ? 1 : 0.6} label={application.mode} />
-                </div>
+                Open queue <ArrowRight className="size-3" />
+              </Link>
+            }
+          >
+            {pending.length === 0 ? (
+              <EmptyState
+                icon={<ClipboardCheck className="size-5" />}
+                title="Nothing waiting on you"
+                hint="Prepared applications stop here so you can check the resume and answers before anything is sent."
+              />
+            ) : (
+              <ul className="-my-2 divide-y divide-border">
+                {pending.slice(0, 5).map((item) => (
+                  <li key={item.id} className="flex items-center gap-3 py-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{item.role}</p>
+                      <p className="truncate text-xs text-muted-foreground">{item.company}</p>
+                    </div>
+                    {item.confidence != null ? (
+                      <ScoreBadge score={item.confidence} label="confidence" className="hidden sm:inline-flex" />
+                    ) : null}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleApprove(item.id)}
+                      disabled={approve.isPending}
+                    >
+                      Approve
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+
+          <Section
+            title="Recent applications"
+            action={
+              <Link
+                href="/jobs"
+                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+              >
+                All jobs <ArrowRight className="size-3" />
+              </Link>
+            }
+          >
+            {recent.length === 0 ? (
+              <EmptyState
+                icon={<Send className="size-5" />}
+                title="No applications yet"
+                hint="Start a hunt and prepared applications will show up here."
+              />
+            ) : (
+              <div className="-mx-4 -my-4 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                      <th className="px-4 py-2.5 font-medium">Role</th>
+                      <th className="px-4 py-2.5 font-medium">Status</th>
+                      <th className="hidden px-4 py-2.5 font-medium sm:table-cell">Mode</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Created</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {recent.map((application) => (
+                      <tr key={application.id} className="transition-colors hover:bg-muted/40">
+                        <td className="max-w-[16rem] px-4 py-3">
+                          <Link
+                            href={`/jobs/${application.job_id}`}
+                            className="block truncate font-medium hover:text-primary"
+                          >
+                            {application.job_title ?? `Job #${application.job_id}`}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusPill status={application.status} />
+                        </td>
+                        <td className="hidden px-4 py-3 text-muted-foreground capitalize sm:table-cell">
+                          {application.mode.replaceAll("_", " ")}
+                        </td>
+                        <td className="px-4 py-3 text-right text-xs text-muted-foreground whitespace-nowrap">
+                          {formatRelative(application.created_at)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            ))}
-            {!applications.data?.length ? (
-              <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-                No applications found yet.
-              </div>
-            ) : null}
-          </div>
-        </article>
-      </section>
-      <section className="panel p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Recent Generated Resumes</h3>
-          <div className="flex items-center gap-2">
-            <Link href="/jobs">
-              <Button variant="outline" size="sm">
-                Open Jobs Explorer
-              </Button>
-            </Link>
-            <Link href="/review-queue">
-              <Button variant="outline" size="sm">
-                Open Review Queue
-              </Button>
-            </Link>
-          </div>
+            )}
+          </Section>
+
+          <Section title="Last 14 days">
+            <ChartContainer height={220}>
+              <BarChart data={analytics.data?.timeline_14d ?? []}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--color-border)" />
+                <XAxis
+                  dataKey="day"
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value: string) => value.slice(5)}
+                  label={{ value: "Date", position: "insideBottom", offset: -2, fontSize: 11 }}
+                  height={36}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={32}
+                />
+                <Tooltip
+                  cursor={{ fill: "var(--color-muted)" }}
+                  contentStyle={{
+                    background: "var(--color-popover)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
+                <Bar dataKey="jobs" name="Jobs found" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey="applications"
+                  name="Applications"
+                  fill="var(--color-chart-1)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ChartContainer>
+          </Section>
         </div>
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {(jobs.data ?? [])
-            .filter((job) => job.resume_versions > 0)
-            .slice(0, 9)
-            .map((job) => (
-              <div key={job.id} className="rounded-xl border border-border/70 p-3">
-              <div className="mb-1 flex items-center justify-between text-sm font-medium">
-                  <span className="truncate">{job.title}</span>
-                  <FileText className="size-4 text-muted-foreground" />
-              </div>
-                <p className="text-xs text-muted-foreground">
-                  {job.company} · versions: {job.resume_versions}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  applications: {job.applications_count}
-                </p>
-              </div>
-            ))}
-          {(jobs.data ?? []).every((job) => job.resume_versions === 0) ? (
-            <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-              No generated resumes yet. Run `generate-resume` from CLI or API pipeline.
-            </p>
-          ) : null}
+
+        <div className="space-y-6">
+          <Section title="Activity">
+            {(activity.data ?? []).length === 0 ? (
+              <EmptyState
+                icon={<Inbox className="size-5" />}
+                title="No activity yet"
+                hint="Discovery, scoring, and application events appear here as they happen."
+              />
+            ) : (
+              <ol className="relative space-y-4 border-l border-border pl-5">
+                {(activity.data ?? []).slice(0, 8).map((entry) => (
+                  <li key={`${entry.timestamp}-${entry.title}`} className="relative">
+                    <span className="absolute -left-[25px] top-1.5 size-2 rounded-full bg-primary" />
+                    <p className="text-sm leading-snug">{entry.title}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {formatRelative(entry.timestamp)}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </Section>
+
+          <Section title="System">
+            <ul className="space-y-3">
+              {health.map((item) => (
+                <li key={item.label} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground">{item.label}</span>
+                  <span className="inline-flex items-center gap-2 font-medium">
+                    <span
+                      className={cn("size-1.5 rounded-full", item.ok ? "bg-success" : "bg-warning")}
+                      aria-hidden="true"
+                    />
+                    {item.ok ? item.okText : item.badText}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Section>
         </div>
-      </section>
+      </div>
     </div>
   )
 }

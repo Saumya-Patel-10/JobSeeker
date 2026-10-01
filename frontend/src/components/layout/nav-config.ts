@@ -1,16 +1,15 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Activity,
   AreaChart,
   Bot,
   BriefcaseBusiness,
   ClipboardCheck,
-  CreditCard,
   FileText,
-  Gauge,
+  LayoutDashboard,
   MonitorCog,
+  MonitorPlay,
+  Rocket,
   Settings2,
-  SlidersHorizontal,
   UserRound,
 } from "lucide-react";
 
@@ -21,83 +20,107 @@ export interface NavItem {
   description: string;
 }
 
-export const navItems: NavItem[] = [
+export interface NavGroup {
+  label: string | null;
+  items: NavItem[];
+}
+
+export const navGroups: NavGroup[] = [
   {
-    label: "Command Center",
-    href: "/",
-    icon: Gauge,
-    description: "High-match job feed, Kanban tracker & live bot",
+    label: null,
+    items: [
+      {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        description: "Today at a glance",
+      },
+      {
+        label: "Jobs",
+        href: "/jobs",
+        icon: BriefcaseBusiness,
+        description: "Discovered jobs and fit scores",
+      },
+      {
+        label: "Applications",
+        href: "/review-queue",
+        icon: ClipboardCheck,
+        description: "Review and approve applications",
+      },
+      {
+        label: "Resume",
+        href: "/resume-studio",
+        icon: FileText,
+        description: "Master and tailored resumes",
+      },
+      {
+        label: "Profile",
+        href: "/profile",
+        icon: UserRound,
+        description: "Your details and standard answers",
+      },
+    ],
   },
   {
-    label: "Onboarding Wizard",
-    href: "/onboarding",
-    icon: SlidersHorizontal,
-    description: "Step-by-step setup: account, plans & resume verification",
-  },
-  {
-    label: "Pricing & Plans",
-    href: "/select-plan",
-    icon: CreditCard,
-    description: "Choose Free, $3.99 Growth, or $7.99 Pro tier",
-  },
-  {
-    label: "Control Center",
-    href: "/control-center",
-    icon: SlidersHorizontal,
-    description: "Run the AI job hunt workflows from the UI",
-  },
-  {
-    label: "Jobs Explorer",
-    href: "/jobs",
-    icon: BriefcaseBusiness,
-    description: "Filter jobs and inspect scoring",
-  },
-  {
-    label: "Resume Studio",
-    href: "/resume-studio",
-    icon: FileText,
-    description: "Compare master vs generated resumes",
-  },
-  {
-    label: "Review Queue",
-    href: "/review-queue",
-    icon: ClipboardCheck,
-    description: "Approve or reject pending applications",
-  },
-  {
-    label: "Live Browser",
-    href: "/live-browser",
-    icon: Activity,
-    description: "Real-time browser telemetry and human override",
-  },
-  {
-    label: "AI Activity Console",
-    href: "/ai-console",
-    icon: Bot,
-    description: "Trace prompts, outputs, and validation outcomes",
-  },
-  {
-    label: "Analytics",
-    href: "/analytics",
-    icon: AreaChart,
-    description: "Funnel, source effectiveness, and score distribution",
-  },
-  {
-    label: "Profile Manager",
-    href: "/profile",
-    icon: UserRound,
-    description: "Manage candidate profile and standard answers",
-  },
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings2,
-    description: "Edit preferences, job sources, and blacklist",
-  },
-  {
-    label: "Browser Settings",
-    href: "/settings/browser",
-    icon: MonitorCog,
-    description: "Manage Firefox profiles and persistent sessions",
+    label: "Automation",
+    items: [
+      {
+        label: "Job hunt",
+        href: "/control-center",
+        icon: Rocket,
+        description: "Start, pause, and configure hunts",
+      },
+      {
+        label: "Live browser",
+        href: "/live-browser",
+        icon: MonitorPlay,
+        description: "Watch the automation session",
+      },
+      {
+        label: "Analytics",
+        href: "/analytics",
+        icon: AreaChart,
+        description: "Funnel and source performance",
+      },
+      {
+        label: "AI activity",
+        href: "/ai-console",
+        icon: Bot,
+        description: "Model calls and validation results",
+      },
+      {
+        label: "Browser profiles",
+        href: "/settings/browser",
+        icon: MonitorCog,
+        description: "Firefox profiles and saved logins",
+      },
+    ],
   },
 ];
+
+export const settingsNavItem: NavItem = {
+  label: "Settings",
+  href: "/settings",
+  icon: Settings2,
+  description: "Preferences, sources, and blacklist",
+};
+
+/** Items shown in the mobile bottom bar. */
+export const mobileNavItems: NavItem[] = [
+  ...navGroups[0].items.filter((item) => item.href !== "/profile"),
+  settingsNavItem,
+];
+
+/** Flat list used by the command palette. */
+export const navItems: NavItem[] = [
+  ...navGroups.flatMap((group) => group.items),
+  settingsNavItem,
+];
+
+export function isActivePath(pathname: string, href: string): boolean {
+  if (href === "/settings") {
+    // Browser profiles live under /settings/browser but have their own nav entry.
+    return pathname === "/settings";
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
