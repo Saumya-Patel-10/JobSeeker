@@ -4,38 +4,38 @@
 # cause `jobassist doctor` to fail with a clear message.
 
 personal:
-  first_name: "Satyam"
-  last_name: "Garg"
-  email: "SatyamGarg108@gmail.com"
-  phone: "4699258587"
+  first_name: "Saumya Aditya"
+  last_name: "Patel"
+  email: "saumya.a.patel@gmail.com"
+  phone: "5127027437"
   pronouns: "He/Him"
-  date_of_birth: "2004-07-02"
+  date_of_birth: "2006-08-10"
   address:
-    street: 305 Riva Rdg
-    city: Wylie
+    street: 800 West Renner Road, Apt 1426
+    city: Richardson
     state: TX
-    postal_code: "75098"
+    postal_code: "75080"
     country: "United States"
 
 links:
-  linkedin: "https://www.linkedin.com/in/satyamgarg108"
-  github: "https://github.com/SatyamGarg108"
-  portfolio: https://satyam-portfolio-vert.vercel.app/
+  linkedin: "https://www.linkedin.com/in/patel-saumya"
+  github: "https://github.com/Saumya-Patel-10"
+  portfolio: "https://saumya-patel.netlify.app/"
   website: null
   twitter: null
 
 work_authorization:
   authorized_to_work_in:
-    - "United States"
+    - "EAD Holder"
   requires_sponsorship: false
-  visa_status: "US citizen"
+  visa_status: "L2 (L1- Dependent)"
 
 salary:
   currency: "USD"
-  minimum: null
-  target: null
+  minimum: 25
+  target: 30
   maximum: null
-  period: "year"
+  period: "hour"
 
 relocation:
   willing_to_relocate: True
@@ -54,7 +54,7 @@ demographic:
 
 standard_answers:
   - question: "Are you legally authorized to work in the United States?"
-    answer: "Yes, I am a US citizen."
+    answer: "Yes, I am a EAD Holder"
     category: "work_auth"
   - question: "Will you now or in the future require sponsorship?"
     answer: "No"
@@ -70,164 +70,103 @@ education:
   - institution: "The University of Texas at Dallas"
     degree: "B.S. Computer Science"
     field: "Computer Science"
-    start_year: 2022
-    end_year: 2026
-    gpa: 3.0
-    honors:
-      - "Cyber Defense Certificate"
-      - "Relevant courses: Digital Forensics, Computer Network Security, Data and Application Security, Computer Networks"
+    start_year: 2024
+    end_year: 2028
+    gpa: 3.024
 
 certifications:
-  - name: "Introduction to Networking and Cloud Computing"
-    issuer: "Microsoft via Coursera"
-    issued: "2024-02-04"
-    credential_id: "P73MLWCUWX7N"
-    url: "https://coursera.org/verify/P73MLWCUWX7N"
-  - name: "Microsoft Office Specialist for Office Outlook 2016"
-    issuer: "Microsoft"
-    issued: "2019-01-24"
-    credential_id: "X6YT-TSFQ-ZQ"
-    url: "https://verify.certiport.com"
-  - name: "Microsoft Office Specialist for Office Word 2016"
-    issuer: "Microsoft"
-    issued: "2019-02-06"
-    credential_id: "3CQP-6JS1-O"
-    url: "https://verify.certiport.com"
-  - name: "Mobility and Device Fundamentals"
-    issuer: "Microsoft"
-    issued: "2021-04-30"
-    credential_id: "wMWpC-H9x6"
-    url: "https://verify.certiport.com"
-  - name: "Networking Fundamentals"
-    issuer: "Microsoft"
-    issued: "2019-12-16"
-    credential_id: "mEYJ-DTh4"
-    url: "https://verify.certiport.com"
-  - name: "Security Fundamentals"
-    issuer: "Microsoft"
-    issued: "2021-12-07"
-    credential_id: "PTHT-uGHM"
-    url: "https://verify.certiport.com"
-  - name: "Certified PC Pro"
-    issuer: "TestOut"
-    issued: "2021-05-18"
-    credential_id: "Certificate ID: 6-1C6-C6JDN; Candidate ID: 6-U6-46K6"
-    url: null
-  - name: "Windows Operating System Fundamentals"
-    issuer: "Microsoft"
-    issued: "2020-11-18"
-    credential_id: "wMnuT-Hay6"
-    url: "https://verify.certiport.com"
-  - name: "AWS Certified Cloud Practitioner"
-    issuer: "Amazon Web Services"
-    issued: "2026-01-07"
-    credential_id: "4c352af5248a41d08d64b5db89683ecb"
-    url: "https://aws.amazon.com/verification"
-  - name: "CodePath Intro to Cybersecurity"
-    issuer: "CodePath"
-    issued: "Spring 2023"
-    credential_id: "143660"
-    url: null
-  - name: "CompTIA Security+"
-    issuer: "CompTIA"
-    issued: "2025-11-28"
-    expires: "2028-11-28"
-    credential_id: "cfd47fcbebc44186b0766c21db1bdfd0; Candidate ID: COMP001022882921"
-    url: "http://verify.CompTIA.org"
-  - name: "Technical Support Fundamentals"
+  - name: "Claude with the Anthropic API"
+    issuer: "Anthropic"
+    issued: "2026-05-20"
+    credential_id: "t29bce4suko9"
+    url: "https://verify.skilljar.com/c/t29bce4suko9"
+  - name: "Introduction to Model Context Protocol"
+    issuer: "Anthropic"
+    issued: "2026-05-20"
+    credential_id: "iuvzdx3eg43t"
+    url: "https://verify.skilljar.com/c/iuvzdx3eg43t"
+  - name: "Introduction to Claude Cowork"
+    issuer: "Anthropic"
+    issued: "2026-05-17"
+    credential_id: "uwiej5sy8wif"
+    url: "https://verify.skilljar.com/c/uwiej5sy8wif"
+  - name: "Introduction to agent skills"
+    issuer: "Anthropic"
+    issued: "2026-08-30"
+    credential_id: "jzeamnw2yigz"
+    url: "https://verify.skilljar.com/c/jzeamnw2yigz"
+  - name: "Model Context Protocol: Advanced Topics"
+    issuer: "Anthropic"
+    issued: "2026-08-30"
+    credential_id: "926qfg57g4oe"
+    url: "https://verify.skilljar.com/c/926qfg57g4oe"
+  - name: "Google AI"
     issuer: "Google via Coursera"
-    issued: "2021-10-30"
-    credential_id: "YLCD8BZGUZ64"
-    url: "https://coursera.org/verify/YLCD8BZGUZ64"
-  - name: "Introduction to Computers and Operating Systems and Security"
-    issuer: "Microsoft via Coursera"
-    issued: "2024-01-15"
-    credential_id: "475DEKNNUP4U"
-    url: "https://coursera.org/verify/475DEKNNUP4U"
+    issued: "2026-08-08"
+    credential_id: "9LH7NJ3ZGM2Q"
+    url: "https://coursera.org/verify/professional-cert/9LH7NJ3ZGM2Q"
+  - name: "AI for App Building"
+    issuer: "Google via Coursera"
+    issued: "2026-08-08"
+    credential_id: "XPUQI0SRMH1Q"
+    url: "https://coursera.org/verify/XPUQI0SRMH1Q"
+  - name: "AI for Data Analysis"
+    issuer: "Google via Coursera"
+    issued: "2026-08-08"
+    credential_id: "839DNPB6APML"
+    url: "https://coursera.org/verify/839DNPB6APML"
 
 employment:
-  - company: "US Anesthesia Partners"
-    title: "SQL Server and Azure Intern"
-    location: null
-    start: "2026-04"
+  - company: "Tomorrow's Leaders Today"
+    title: "Web Developer"
+    location: "Frisco, Texas"
+    start: "2026-09"
     end: null
     current: true
     bullets:
-      - "Developed and optimized T-SQL queries and stored procedures, improving data retrieval efficiency across relational datasets."
-      - "Performed database maintenance tasks including indexing, backups, and performance tuning to ensure reliability and scalability."
-      - "Supported Azure data migrations and built ETL pipelines using Azure SQL and related services."
+      - "Shaping user experience and information architecture for the web platform at Tomorrow's Leaders Today — reworking navigation and page structure, mapping out user journeys, and sharpening calls-to-action to make the site more intuitive to use, as part of a hands-on, project-based leadership program."
+      - "Also pitched in on the front-end/responsive-design, QA/performance, and AI-workflow/documentation teams as needed — helping with responsive layout fixes, accessibility and cross-browser testing, and documentation for TLT's AI-assisted workflows, picking up hands-on exposure well beyond the core UX/IA role."
     tech:
-      - "T-SQL"
-      - "SQL Server"
-      - "Azure"
-      - "ETL"
-
-  - company: "Every City Church"
-    title: "Freelance Engineer"
-    location: null
-    start: "2025-05"
-    end: "2026-05"
-    current: False
-    bullets:
-      - "Led migration from WordPress on Bluehost to a serverless Next.js + Firebase architecture across AWS and GCP, managing DNS, SSL, and production cutover."
-      - "Designed branch-based CI/CD pipelines with isolated dev/prod environments enabling zero-downtime deployments."
-      - "Engineered secure architecture using Firestore RBAC, centralized secrets management with GCP Secret Manager, and SSR/SSG caching optimizations, reducing database operations by about 30%."
-    tech:
+      - "React"
       - "Next.js"
-      - "Firebase"
-      - "AWS"
-      - "GCP"
-      - "CI/CD"
-      - "Route 53"
-
-  - company: "Dallas County"
-    title: "IT Intern - Technician"
-    location: null
-    start: "2025-05"
-    end: "2026-04"
-    current: false
-    bullets:
-      - "Administered Active Directory lifecycle management, including provisioning, deprovisioning, and role-based access control across enterprise systems."
-      - "Resolved Tier 2/3 infrastructure issues across county offices, troubleshooting identity, endpoint, and network configuration failures."
-      - "Managed hardware deployment, inventory tracking, and enterprise software licensing across multiple locations."
-    tech:
-      - "Active Directory"
-      - "RBAC"
-      - "Windows"
-      - "Networking"
+      - "HTML5"
+      - "CSS3"
+      - "JavaScript"
+      - "Figma"
+      - "Git"
+      - "GitHub"
+      - "VS Code"
 
 skills:
-  - "AWS"
-  - "Azure"
-  - "Google Cloud (Firebase)"
-  - "Terraform"
-  - "Ansible"
-  - "Jenkins"
-  - "Docker"
-  - "CI/CD"
-  - "VMware ESXi"
-  - "vCenter"
-  - "Citrix XenServer"
-  - "Proxmox"
-  - "Windows Server"
-  - "OpenSCAP"
-  - "RBAC"
-  - "IAM"
-  - "Firestore Security Rules"
-  - "Secrets Management"
-  - "MITRE ATT&CK"
-  - "Python"
   - "Java"
+  - "Python"
   - "C++"
-  - "TypeScript"
-  - "Next.js"
-  - "Firebase"
-  - "VPCs"
-  - "Subnets"
-  - "Routing"
-  - "DNS"
-  - "Active Directory"
-  - "SQL Server"
-  - "Azure SQL"
+  - "JavaScript (ES6+)"
+  - "HTML5"
+  - "CSS3"
+  - "Data Structures & Algorithms"
+  - "OOP"
+  - "RESTful APIs"
+  - "Graph Algorithms"
+  - "Multithreading & Concurrency"
+  - "SQL & NoSQL"
+  - "Agile/Scrum"
+  - "React"
+  - "Flask"
+  - "Spring Boot"
+  - "Node.js"
+  - "cpp-httplib"
+  - "NetworkX"
+  - "scikit-learn"
+  - "Neo4j"
+  - "Streamlit"
+  - "pandas"
+  - "Git"
+  - "GitHub"
+  - "VS Code"
+  - "Claude Code"
   - "MySQL"
-  - "T-SQL"
+  - "Anthropic Claude API"
+  - "MCP"
+  - "Google Calendar API"
+  - "OAuth 2.0"
