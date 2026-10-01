@@ -300,14 +300,14 @@ export function DashboardPage() {
               "rounded-xl border-border/80 bg-card/60 shadow-xs hover:border-primary/40"
             )}
           >
-            <Layers className="mr-2 size-3.5 text-indigo-500" />
+            <Layers className="mr-2 size-3.5 text-primary" />
             Hunt Settings
           </Link>
         </div>
       </div>
 
       {/* Hero Command Deck Card */}
-      <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-indigo-500/5 p-5 shadow-sm backdrop-blur-xl sm:p-6">
+      <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2.5">
@@ -346,7 +346,7 @@ export function DashboardPage() {
           <div className="flex flex-wrap items-center gap-2">
             {!isHuntActive ? (
               <Button
-                className="h-10 gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 font-semibold text-white shadow-md shadow-indigo-500/25 transition-all hover:scale-[1.02] hover:opacity-95"
+                className="h-10 gap-2 rounded-xl px-5 font-semibold"
                 onClick={() => handleStartHunt(selectedTrack)}
                 disabled={startHunt.isPending}
               >
@@ -483,7 +483,7 @@ export function DashboardPage() {
             aria-valuenow={quotaPct}
           >
             <div
-              className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500"
+              className="h-full rounded-full bg-primary transition-all duration-500"
               style={{ width: `${quotaPct}%` }}
             />
           </div>
@@ -516,7 +516,7 @@ export function DashboardPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Jobs Found Today
             </p>
-            <div className="rounded-lg bg-sky-500/10 p-1.5 text-sky-500">
+            <div className="rounded-lg bg-info/10 p-1.5 text-info">
               <BriefcaseBusiness className="size-4" />
             </div>
           </div>

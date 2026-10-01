@@ -40,10 +40,10 @@ export function Topbar() {
         {/* Active Track indicator */}
         <Link
           href="/jobs"
-          className="hidden items-center gap-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-600 transition-all hover:bg-indigo-500/15 dark:border-indigo-500/30 dark:bg-indigo-500/15 dark:text-indigo-300 md:inline-flex"
+          className="hidden items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/15 md:inline-flex"
           title="Active Target Tracks"
         >
-          <Layers className="size-3.5 text-indigo-500" />
+          <Layers className="size-3.5" />
           <span>Full-Stack · Frontend · Backend · AI</span>
         </Link>
 

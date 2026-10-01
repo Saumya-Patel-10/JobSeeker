@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils"
 type Tone = "success" | "info" | "warning" | "danger" | "neutral"
 
 const toneClass: Record<Tone, string> = {
-  success: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-500/15",
-  info: "border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 dark:bg-indigo-500/15",
-  warning: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400 dark:bg-amber-500/15",
-  danger: "border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400 dark:bg-rose-500/15",
+  success: "border-success/25 bg-success/10 text-success",
+  info: "border-info/25 bg-info/10 text-info",
+  warning: "border-warning/30 bg-warning/15 text-warning",
+  danger: "border-destructive/25 bg-destructive/10 text-destructive",
   neutral: "border-border/80 bg-muted/60 text-muted-foreground",
 }
 
@@ -59,10 +59,10 @@ export function StatusPill({
       <span
         className={cn(
           "size-1.5 rounded-full",
-          tone === "success" && "bg-emerald-500",
-          tone === "info" && "bg-indigo-500",
-          tone === "warning" && "bg-amber-500",
-          tone === "danger" && "bg-rose-500",
+          tone === "success" && "bg-success",
+          tone === "info" && "bg-info",
+          tone === "warning" && "bg-warning",
+          tone === "danger" && "bg-destructive",
           tone === "neutral" && "bg-muted-foreground",
           isLive && "animate-ping"
         )}
