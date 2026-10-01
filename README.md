@@ -173,10 +173,7 @@ CLI / API → Pipelines → (ATS adapters | LLM provider | resume engine | DB)
 
 ## Documentation
 
-- [`QUICKSTART.md`](QUICKSTART.md) - one-command startup path.
-- [`FIRST_RUN.md`](FIRST_RUN.md) - first run checklist for fresh machines.
 - [`FIREFOX_SETUP.md`](FIREFOX_SETUP.md) - Firefox profile/session reuse setup.
-- [`RUNTIME_GUIDE.md`](RUNTIME_GUIDE.md) - runtime orchestration, health checks, troubleshooting.
 - [`UserManual.MD`](UserManual.MD) - step by step user operations guide.
 - [`docs/setup.md`](docs/setup.md) — installation, prerequisites, verification.
 - [`docs/configuration.md`](docs/configuration.md) — every YAML/JSON setting.

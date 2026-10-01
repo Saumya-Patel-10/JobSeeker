@@ -61,7 +61,7 @@ flowchart TB
 
 | Removed or deprecated | Replaced by |
 |----------------------|-------------|
-| `JobHuntManager` independent loop | `JobApplicationOrchestrator` (facade re-exports for compat) |
+| `JobHuntManager` independent loop | `JobApplicationOrchestrator` (the old `JobHuntManager` facade has been removed) |
 | `collect_source_urls` in Control Center search | `orchestrator.discover()` → `SourceOrchestrator.poll_all` |
 | CLI `search` calling legacy collectors | `orchestrator.discover(ingest=True)` |
 | `apply_pipeline` inline `adapter.submit()` | `prepare_application` + `submit_application_if_approved` |

@@ -281,7 +281,7 @@ export function JobsExplorerPage() {
                           Resume Studio
                         </Button>
                       </Link>
-                      <Link href="/automation">
+                      <Link href="/live-browser">
                         <Button variant="outline" className="w-full justify-start">
                           <PlayCircle className="mr-2 size-4" />
                           Automation Monitor
