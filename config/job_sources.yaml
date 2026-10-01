@@ -8,11 +8,13 @@ sources:
     config:
       keywords:
         - "software engineer"
-        - "systems engineer"
-        - "cloud engineer"
-        - "security engineer"
-        - "devops engineer"
-        - "infrastructure engineer"
+        - "frontend engineer"
+        - "backend engineer"
+        - "full stack engineer"
+        - "ai engineer"
+        - "machine learning engineer"
+        - "software developer"
+        - "ai developer"
 
   - name: "indeed"
     type: "indeed_search"
@@ -29,6 +31,7 @@ sources:
     enabled: false
     config:
       keywords:
+        - "software engineer"
         - "systems engineer"
 
   - name: "l3harris"
@@ -48,7 +51,11 @@ sources:
       board_token: "stripe"
       keywords:
         - "engineer"
-        - "security"
+        - "software"
+        - "frontend"
+        - "backend"
+        - "full stack"
+        - "ai"
 
   - name: "ramp-lever"
     type: "lever_board"

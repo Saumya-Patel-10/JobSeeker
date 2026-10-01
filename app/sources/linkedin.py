@@ -36,8 +36,8 @@ class LinkedInSourceAdapter(JobSourceAdapter):
         get_event_bus().emit("browser.task", {"task": "LinkedIn discovery search"})
 
         urls: list[str] = []
-        for keyword in keywords[:3]:
-            if not await runtime.await_ready():
+        for keyword in keywords[:8]:
+            if len(urls) >= ctx.limit or not await runtime.await_ready():
                 break
             query = urllib.parse.urlencode(
                 {
