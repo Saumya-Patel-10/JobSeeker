@@ -1,0 +1,100 @@
+# Job Finding Assistant - user profile TEMPLATE.
+#
+# This file is a placeholder. On first run the app copies it to
+# `config/profile.yaml` (which is git-ignored) - edit THAT file with your real
+# information. Never put real personal data in this template.
+#
+# Pipelines validate the profile via the Pydantic schema in
+# app/models/profile.py; missing required fields make `jobassist doctor` fail
+# with a clear message.
+
+personal:
+  first_name: "Jane"
+  last_name: "Doe"
+  email: "jane.doe@example.com"
+  phone: "5555550100"
+  pronouns: null
+  date_of_birth: null
+  address:
+    street: null
+    city: "Austin"
+    state: TX
+    postal_code: null
+    country: "United States"
+
+links:
+  linkedin: "https://www.linkedin.com/in/your-handle"
+  github: "https://github.com/your-handle"
+  portfolio: null
+  website: null
+  twitter: null
+
+work_authorization:
+  authorized_to_work_in:
+    - "United States"
+  requires_sponsorship: false
+  visa_status: null
+
+salary:
+  currency: "USD"
+  minimum: null
+  target: null
+  maximum: null
+  period: "year" # hour | month | year
+
+relocation:
+  willing_to_relocate: false
+  preferred_locations: []
+  remote_preference: "no_preference" # remote | hybrid | onsite | no_preference
+
+demographic:
+  # All fields are optional. Set decline_to_self_identify to true to refuse
+  # voluntary EEOC questions.
+  gender: null
+  race_ethnicity: []
+  veteran_status: null
+  disability_status: null
+  decline_to_self_identify: true
+
+standard_answers:
+  - question: "Are you legally authorized to work in the United States?"
+    answer: "Yes"
+    category: "work_auth"
+  - question: "Will you now or in the future require sponsorship?"
+    answer: "No"
+    category: "work_auth"
+  - question: "What is your earliest start date?"
+    answer: "Two weeks after an offer"
+    category: "availability"
+  - question: "Have you ever been employed by us before?"
+    answer: "No"
+    category: "history"
+
+education:
+  - institution: "Example University"
+    degree: "B.S. Computer Science"
+    field: "Computer Science"
+    start_year: 2020
+    end_year: 2024
+    gpa: null
+
+certifications: []
+
+employment:
+  - company: "Example Corp"
+    title: "Software Engineer"
+    location: "Remote"
+    start: "2024-06"
+    end: null
+    current: true
+    bullets:
+      - "Describe a concrete, measurable accomplishment here."
+      - "Describe another one - what you built, and the result."
+    tech:
+      - "Python"
+      - "TypeScript"
+
+skills:
+  - "Python"
+  - "TypeScript"
+  - "SQL"

@@ -1,0 +1,43 @@
+{
+  "headline": "Software Engineer | Your Focus Areas Here",
+  "summary": "Two or three sentences describing your experience, strengths and the kind of role you want. Replace this placeholder text with your own summary; it is the master source the tailoring step starts from.",
+  "skills": ["Python", "TypeScript", "SQL", "React", "Git"],
+  "employment": [
+    {
+      "company": "Example Corp",
+      "title": "Software Engineer",
+      "location": "Remote",
+      "start": "2024-06",
+      "end": null,
+      "current": true,
+      "bullets": [
+        "Describe a concrete, measurable accomplishment here.",
+        "Describe another one - what you built, and the result."
+      ],
+      "tech": ["Python", "TypeScript"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Example University",
+      "degree": "B.S. Computer Science",
+      "field": "Computer Science",
+      "start_year": 2020,
+      "end_year": 2024,
+      "gpa": null,
+      "honors": []
+    }
+  ],
+  "certifications": [],
+  "projects": [
+    {
+      "name": "Example Project",
+      "description": "One-line description of what the project does.",
+      "tech": ["Python"],
+      "url": null,
+      "bullets": ["What you built and the outcome."]
+    }
+  ],
+  "publications": [],
+  "languages": ["English"]
+}
