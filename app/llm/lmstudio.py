@@ -126,7 +126,15 @@ class LMStudioProvider:
                 },
             }
         else:
-            payload["response_format"] = {"type": "json_object"}
+            # LM Studio rejects ``json_object``; it only accepts ``json_schema`` or ``text``.
+            payload["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "response",
+                    "schema": {"type": "object"},
+                    "strict": False,
+                },
+            }
 
         data = await self._post("/chat/completions", payload)
         try:
