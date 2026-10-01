@@ -9,9 +9,12 @@ import {
   Play,
   RefreshCw,
   Search,
+  Sparkles,
   Square,
 } from "lucide-react";
 import { toast } from "sonner";
+
+import { TRACK_LIST } from "@/features/jobs/role-tracks";
 
 import { PageHeader } from "@/components/layout/page-header";
 import { MetricCard } from "@/components/primitives/metric-card";
@@ -523,6 +526,33 @@ export function ControlCenterPage() {
               </div>
 
               <div className="space-y-2">
+                <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3 space-y-2 mb-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <Sparkles className="size-3.5 text-indigo-500" />
+                      Role Track Presets:
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">Click to set keywords</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {TRACK_LIST.map((track) => (
+                      <Button
+                        key={track.id}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 gap-1 rounded-lg border-border/80 bg-card text-xs font-medium hover:border-primary/50"
+                        onClick={() => {
+                          setKeywordsText(track.keywords.join(", "));
+                          toast.success(`Loaded keywords for ${track.label}`);
+                        }}
+                      >
+                        <span>{track.badge}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
                 <label className="text-xs text-muted-foreground">Search filters</label>
                 <Input
                   value={keywordsText}
