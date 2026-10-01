@@ -2,7 +2,7 @@ llm:
   provider: lmstudio
   base_url: http://localhost:1234/v1
   api_key: lm-studio
-  chat_model: gemma-4-12b
+  chat_model: google/gemma-4-12b-qat
   embedding_model: null
   request_timeout: 120.0
   max_retries: 3
