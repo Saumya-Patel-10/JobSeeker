@@ -66,7 +66,10 @@ async def get_status(config: AppConfig = Depends(get_config)) -> StatusResponse:
     system_profiles = discover_system_firefox_profiles()
     managed_profiles = discover_managed_firefox_profiles()
 
-    is_healthy = DEFAULT_DB_PATH.exists() and (health.exists if health else True)
+    # A managed browser profile is created on first launch, so a missing profile
+    # directory must not mark the whole backend as unhealthy. Browser state is
+    # reported separately through the ``browser_*`` fields.
+    is_healthy = DEFAULT_DB_PATH.exists()
     return StatusResponse(
         healthy=is_healthy,
         llm_provider=llm_cfg.provider,
