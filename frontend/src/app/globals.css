@@ -53,86 +53,87 @@
 }
 
 /*
- * Design tokens
- * Warm paper background, near-black ink, one emerald accent.
- * Semantic colors (success / warning / info) are used only for status chips.
+ * Design tokens:
+ * Modern high-end developer SaaS aesthetic.
+ * Light mode: crisp porcelain, obsidian text, vibrant electric indigo & emerald accents.
+ * Dark mode: deep obsidian midnight, luminescent indigo & cyan/emerald accents.
  */
 :root {
   color-scheme: light;
-  --background: oklch(0.982 0.004 95);
-  --foreground: oklch(0.205 0.012 95);
+  --background: oklch(0.985 0.005 260);
+  --foreground: oklch(0.18 0.02 265);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.205 0.012 95);
+  --card-foreground: oklch(0.18 0.02 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.205 0.012 95);
-  --primary: oklch(0.56 0.135 160);
-  --primary-foreground: oklch(0.985 0.01 160);
-  --secondary: oklch(0.958 0.006 95);
-  --secondary-foreground: oklch(0.27 0.012 95);
-  --muted: oklch(0.958 0.006 95);
-  --muted-foreground: oklch(0.52 0.012 95);
-  --accent: oklch(0.955 0.03 160);
-  --accent-foreground: oklch(0.32 0.08 160);
-  --destructive: oklch(0.58 0.2 27);
-  --border: oklch(0.91 0.006 95);
-  --input: oklch(0.9 0.006 95);
-  --ring: oklch(0.6 0.13 160);
-  --success: oklch(0.52 0.12 160);
-  --warning: oklch(0.62 0.13 75);
-  --info: oklch(0.55 0.12 250);
-  --chart-1: oklch(0.56 0.135 160);
-  --chart-2: oklch(0.72 0.05 160);
-  --chart-3: oklch(0.55 0.12 250);
-  --chart-4: oklch(0.72 0.13 75);
-  --chart-5: oklch(0.6 0.02 95);
+  --popover-foreground: oklch(0.18 0.02 265);
+  --primary: oklch(0.56 0.22 268);
+  --primary-foreground: oklch(0.99 0.005 268);
+  --secondary: oklch(0.96 0.01 260);
+  --secondary-foreground: oklch(0.24 0.02 265);
+  --muted: oklch(0.955 0.008 260);
+  --muted-foreground: oklch(0.48 0.02 260);
+  --accent: oklch(0.95 0.035 268);
+  --accent-foreground: oklch(0.35 0.14 268);
+  --destructive: oklch(0.58 0.22 25);
+  --border: oklch(0.91 0.01 260);
+  --input: oklch(0.9 0.01 260);
+  --ring: oklch(0.56 0.22 268);
+  --success: oklch(0.58 0.16 155);
+  --warning: oklch(0.68 0.16 65);
+  --info: oklch(0.58 0.16 240);
+  --chart-1: oklch(0.56 0.22 268);
+  --chart-2: oklch(0.68 0.15 160);
+  --chart-3: oklch(0.62 0.16 230);
+  --chart-4: oklch(0.72 0.16 65);
+  --chart-5: oklch(0.65 0.02 260);
   --radius: 0.75rem;
-  --sidebar: oklch(0.99 0.003 95);
-  --sidebar-foreground: oklch(0.27 0.012 95);
-  --sidebar-primary: oklch(0.56 0.135 160);
-  --sidebar-primary-foreground: oklch(0.985 0.01 160);
-  --sidebar-accent: oklch(0.955 0.03 160);
-  --sidebar-accent-foreground: oklch(0.32 0.08 160);
-  --sidebar-border: oklch(0.91 0.006 95);
-  --sidebar-ring: oklch(0.6 0.13 160);
+  --sidebar: oklch(0.99 0.005 260);
+  --sidebar-foreground: oklch(0.24 0.02 265);
+  --sidebar-primary: oklch(0.56 0.22 268);
+  --sidebar-primary-foreground: oklch(0.99 0.005 268);
+  --sidebar-accent: oklch(0.95 0.035 268);
+  --sidebar-accent-foreground: oklch(0.35 0.14 268);
+  --sidebar-border: oklch(0.92 0.01 260);
+  --sidebar-ring: oklch(0.56 0.22 268);
 }
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.175 0.008 95);
-  --foreground: oklch(0.96 0.006 95);
-  --card: oklch(0.21 0.009 95);
-  --card-foreground: oklch(0.96 0.006 95);
-  --popover: oklch(0.21 0.009 95);
-  --popover-foreground: oklch(0.96 0.006 95);
-  --primary: oklch(0.7 0.15 160);
-  --primary-foreground: oklch(0.18 0.03 160);
-  --secondary: oklch(0.25 0.009 95);
-  --secondary-foreground: oklch(0.96 0.006 95);
-  --muted: oklch(0.25 0.009 95);
-  --muted-foreground: oklch(0.72 0.01 95);
-  --accent: oklch(0.28 0.04 160);
-  --accent-foreground: oklch(0.92 0.05 160);
-  --destructive: oklch(0.7 0.19 25);
-  --border: oklch(1 0 0 / 11%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.7 0.14 160);
-  --success: oklch(0.74 0.15 160);
-  --warning: oklch(0.8 0.14 80);
-  --info: oklch(0.74 0.12 250);
-  --chart-1: oklch(0.7 0.15 160);
-  --chart-2: oklch(0.5 0.06 160);
-  --chart-3: oklch(0.72 0.12 250);
-  --chart-4: oklch(0.8 0.14 80);
-  --chart-5: oklch(0.65 0.015 95);
+  --background: oklch(0.13 0.025 265);
+  --foreground: oklch(0.96 0.01 260);
+  --card: oklch(0.165 0.022 265);
+  --card-foreground: oklch(0.96 0.01 260);
+  --popover: oklch(0.165 0.022 265);
+  --popover-foreground: oklch(0.96 0.01 260);
+  --primary: oklch(0.68 0.22 268);
+  --primary-foreground: oklch(0.13 0.03 268);
+  --secondary: oklch(0.22 0.02 265);
+  --secondary-foreground: oklch(0.96 0.01 260);
+  --muted: oklch(0.21 0.02 265);
+  --muted-foreground: oklch(0.68 0.02 260);
+  --accent: oklch(0.26 0.06 268);
+  --accent-foreground: oklch(0.94 0.05 268);
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.68 0.22 268);
+  --success: oklch(0.72 0.16 155);
+  --warning: oklch(0.78 0.16 70);
+  --info: oklch(0.72 0.15 240);
+  --chart-1: oklch(0.68 0.22 268);
+  --chart-2: oklch(0.72 0.16 155);
+  --chart-3: oklch(0.72 0.15 240);
+  --chart-4: oklch(0.78 0.16 70);
+  --chart-5: oklch(0.65 0.02 260);
   --radius: 0.75rem;
-  --sidebar: oklch(0.195 0.008 95);
-  --sidebar-foreground: oklch(0.96 0.006 95);
-  --sidebar-primary: oklch(0.7 0.15 160);
-  --sidebar-primary-foreground: oklch(0.18 0.03 160);
-  --sidebar-accent: oklch(0.28 0.04 160);
-  --sidebar-accent-foreground: oklch(0.92 0.05 160);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.7 0.14 160);
+  --sidebar: oklch(0.145 0.024 265);
+  --sidebar-foreground: oklch(0.96 0.01 260);
+  --sidebar-primary: oklch(0.68 0.22 268);
+  --sidebar-primary-foreground: oklch(0.13 0.03 268);
+  --sidebar-accent: oklch(0.26 0.06 268);
+  --sidebar-accent-foreground: oklch(0.94 0.05 268);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: oklch(0.68 0.22 268);
 }
 
 @layer base {
@@ -140,42 +141,77 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
     font-feature-settings: "cv11", "ss01";
   }
   html {
     @apply font-sans;
     scroll-behavior: smooth;
   }
-  ::selection {
-    background: color-mix(in oklch, var(--primary) 25%, transparent);
-  }
 }
 
 @layer utilities {
-  /* Flat surface used across app pages. */
+  /* Modern clean card surface */
   .panel {
-    @apply rounded-xl border border-border bg-card;
+    @apply rounded-xl border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200;
   }
 
+  /* Ultra-sleek glassmorphic panel */
   .panel-glass {
-    @apply rounded-xl border border-border bg-card/80 backdrop-blur-md;
+    @apply rounded-xl border border-border/80 bg-card/75 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-200;
+  }
+
+  /* Interactive hover card */
+  .panel-interactive {
+    @apply rounded-xl border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)];
+  }
+
+  /* Subtle gradient glow container */
+  .panel-glow {
+    @apply relative overflow-hidden rounded-xl border border-border/80 bg-card/85 backdrop-blur-md;
   }
 
   .data-grid {
-    @apply grid gap-3 sm:grid-cols-2 xl:grid-cols-4;
+    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4;
   }
 
   .tabular {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Subtle dotted texture for marketing hero. */
+  /* Ambient dot pattern */
   .bg-dots {
     background-image: radial-gradient(
-      color-mix(in oklch, var(--foreground) 12%, transparent) 1px,
+      color-mix(in oklch, var(--foreground) 10%, transparent) 1px,
       transparent 1px
     );
-    background-size: 22px 22px;
+    background-size: 20px 20px;
   }
+
+  /* Gradient border highlight */
+  .gradient-border-indigo {
+    background: linear-gradient(var(--card), var(--card)) padding-box,
+      linear-gradient(to right, rgb(99 102 241), rgb(168 85 247)) border-box;
+    border: 1px solid transparent;
+  }
+}
+
+/* Custom animations */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
 }

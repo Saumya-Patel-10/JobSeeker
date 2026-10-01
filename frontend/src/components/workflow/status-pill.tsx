@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils"
 type Tone = "success" | "info" | "warning" | "danger" | "neutral"
 
 const toneClass: Record<Tone, string> = {
-  success: "bg-success/10 text-success",
-  info: "bg-info/10 text-info",
-  warning: "bg-warning/15 text-warning",
-  danger: "bg-destructive/10 text-destructive",
-  neutral: "bg-muted text-muted-foreground",
+  success: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-500/15",
+  info: "border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 dark:bg-indigo-500/15",
+  warning: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400 dark:bg-amber-500/15",
+  danger: "border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400 dark:bg-rose-500/15",
+  neutral: "border-border/80 bg-muted/60 text-muted-foreground",
 }
 
 const toneByStatus: Record<string, Tone> = {
@@ -46,14 +46,27 @@ export function StatusPill({
 }) {
   const normalized = (status ?? "unknown").toLowerCase()
   const tone = toneByStatus[normalized] ?? "neutral"
+  const isLive = normalized === "running"
+
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center rounded-full px-2 text-xs font-medium whitespace-nowrap capitalize",
+        "inline-flex h-5 items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-semibold whitespace-nowrap capitalize shadow-2xs",
         toneClass[tone],
         className
       )}
     >
+      <span
+        className={cn(
+          "size-1.5 rounded-full",
+          tone === "success" && "bg-emerald-500",
+          tone === "info" && "bg-indigo-500",
+          tone === "warning" && "bg-amber-500",
+          tone === "danger" && "bg-rose-500",
+          tone === "neutral" && "bg-muted-foreground",
+          isLive && "animate-ping"
+        )}
+      />
       {normalized.replaceAll("_", " ")}
     </span>
   )
