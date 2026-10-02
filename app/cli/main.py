@@ -74,6 +74,10 @@ app.command("runtime-check")(runtime_check_cmd.runtime_check)
 app.command("browser-profiles")(browser_profiles_cmd.browser_profiles)
 app.command("browser-clone")(browser_profiles_cmd.browser_clone)
 app.command("browser-activate")(browser_profiles_cmd.browser_activate)
+app.command("browser-chrome-profiles")(browser_profiles_cmd.browser_chrome_list)
+app.command("browser-chrome-activate")(browser_profiles_cmd.browser_chrome_activate)
+app.command("browser-login")(browser_profiles_cmd.browser_login)
+app.command("browser-check-login")(browser_profiles_cmd.browser_check_login)
 
 
 def main() -> None:  # pragma: no cover

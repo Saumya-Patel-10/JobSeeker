@@ -15,7 +15,15 @@ browser:
   engine: chromium
   channel: chrome
   persistent_profile: true
-  profile_source: managed
+  # profile_source: system uses your own installed Chrome profile (with your
+  # Google account and existing job-site logins). Close all Chrome windows
+  # before running automation, since Chrome cannot share a running profile.
+  profile_source: system
+  # Chrome profile directory (e.g. "Default", "Profile 1"); null = auto-pick
+  # the profile signed in with account_email below.
+  chrome_profile: null
+  # Google account used to auto-select your Chrome profile.
+  account_email: saumya.a.patel@gmail.com
   firefox_profile: null
   headless: false
   slowmo_ms: 50

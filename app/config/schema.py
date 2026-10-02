@@ -45,6 +45,13 @@ class BrowserConfig(BaseModel):
     persistent_profile: bool = True
     profile_source: Literal["managed", "system"] = "managed"
     firefox_profile: str | None = None
+    # Chrome profile directory name (e.g. "Default", "Profile 1") used when
+    # profile_source is "system" and the engine is "chromium". If null, the
+    # profile signed in with account_email is chosen automatically.
+    chrome_profile: str | None = None
+    # Google account used to auto-select the Chrome profile when
+    # chrome_profile is null (matches the profile signed in with this email).
+    account_email: str | None = None
     headless: bool = False
     slowmo_ms: int = 50
     profile: str = "default"

@@ -15,6 +15,14 @@ from playwright.async_api import (
     async_playwright,
 )
 
+from app.automation.chrome_profiles import (
+    ChromeProfile,
+    chrome_is_running,
+    chrome_user_data_dir,
+    discover_system_chrome_profiles,
+    find_chrome_profile_by_email,
+    get_chrome_profile,
+)
 from app.automation.firefox_profiles import (
     clone_firefox_profile,
     get_firefox_profile,
@@ -37,6 +45,7 @@ class BrowserSession:
         self._pw: Playwright | None = None
         self._browser: Browser | None = None
         self._context: BrowserContext | None = None
+        self._chrome_profile_directory: str | None = None
 
     @property
     def context(self) -> BrowserContext:
@@ -61,11 +70,13 @@ class BrowserSession:
             self._pw = await async_playwright().start()
             browser_type = self._browser_type()
             channel = self._resolve_channel()
+            args = self._launch_args()
             if self.config.persistent_profile:
                 user_data_dir, profile_label = self._resolve_user_data_dir()
                 self._context = await browser_type.launch_persistent_context(
                     user_data_dir=str(user_data_dir),
                     channel=channel,
+                    args=args,
                     headless=self.config.headless,
                     slow_mo=self.config.slowmo_ms,
                     locale=self.config.locale,
@@ -80,6 +91,7 @@ class BrowserSession:
                 profile_label = "ephemeral"
                 self._browser = await browser_type.launch(
                     channel=channel,
+                    args=args,
                     headless=self.config.headless,
                     slow_mo=self.config.slowmo_ms,
                 )
@@ -232,6 +244,8 @@ class BrowserSession:
         return self._pw.chromium
 
     def _resolve_user_data_dir(self) -> tuple[Path, str]:
+        if self.config.engine == "chromium" and self.config.profile_source == "system":
+            return self._resolve_chrome_system_profile()
         if self.config.engine == "firefox" and self.config.profile_source == "system":
             profile_name = self.config.firefox_profile
             if not profile_name:
@@ -256,6 +270,56 @@ class BrowserSession:
         managed_profile = (BROWSER_PROFILES_DIR / _safe_name(profile_name)).resolve()
         managed_profile.mkdir(parents=True, exist_ok=True)
         return managed_profile, profile_name
+
+    def _resolve_chrome_system_profile(self) -> tuple[Path, str]:
+        """Resolve the user's real Chrome profile for system-profile mode.
+
+        Selection order:
+        1. ``browser.chrome_profile`` (a Chrome profile directory name such as
+           "Default" or "Profile 1")
+        2. the profile signed in with ``browser.account_email``
+        3. Chrome's last-used profile
+        """
+        base = chrome_user_data_dir()
+        if not base.is_dir():
+            raise BrowserError(f"Chrome User Data directory not found: {base}")
+
+        profile: ChromeProfile | None = None
+        if self.config.chrome_profile:
+            profile = get_chrome_profile(self.config.chrome_profile, root=base)
+            if profile is None:
+                raise BrowserError(f"Chrome profile not found: {self.config.chrome_profile}")
+        if profile is None and self.config.account_email:
+            profile = find_chrome_profile_by_email(self.config.account_email, root=base)
+        if profile is None:
+            profiles = discover_system_chrome_profiles(root=base)
+            profile = next((p for p in profiles if p.is_last_used), None) or (
+                profiles[0] if profiles else None
+            )
+        if profile is None:
+            profile = ChromeProfile(dir_name="Default", display_name="Default", email=None)
+
+        if chrome_is_running(base):
+            raise BrowserError(
+                "Google Chrome appears to be running with this profile. "
+                "Close all Chrome windows and try again, or set "
+                "browser.profile_source: managed in preferences.yaml."
+            )
+
+        self._chrome_profile_directory = profile.dir_name
+        log.info(
+            "chrome.system_profile_selected",
+            dir_name=profile.dir_name,
+            display_name=profile.display_name,
+            email=profile.email,
+        )
+        return base, f"{profile.display_name} ({profile.dir_name})"
+
+    def _launch_args(self) -> list[str]:
+        """Extra Chromium launch args, e.g. to select a real Chrome profile."""
+        if self._chrome_profile_directory:
+            return [f"--profile-directory={self._chrome_profile_directory}"]
+        return []
 
 
 def _safe_name(value: str) -> str:

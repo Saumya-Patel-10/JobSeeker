@@ -42,7 +42,10 @@ Validated against `app/config/schema.py:Preferences`.
 | `channel` | `null` | Optional Playwright channel (only with `engine: chromium`), e.g. `chrome` or `msedge` — launches the locally installed branded browser instead of the bundled Chromium build. Requires that browser to be installed. |
 | `headless` | `false` | Start headed so you can log into LinkedIn/Google etc. once; subsequent runs reuse cookies from the persistent profile. |
 | `slowmo_ms` | `50` | Per-action throttle. |
-| `profile` | `default` | Subdirectory of `data/browser_profiles/`. |
+| `profile` | `default` | Subdirectory of `data/browser_profiles/` (managed profiles only). |
+| `profile_source` | `managed` | `managed` uses an isolated profile under `data/browser_profiles/`; `system` uses your own installed Chrome profile (with your existing job-site logins). System mode requires Chrome to be closed during automation. |
+| `chrome_profile` | `null` | Chrome profile directory (e.g. `Default`, `Profile 1`) used in system mode. If null, the profile signed in with `account_email` is chosen automatically. |
+| `account_email` | `null` | Google account used to auto-select your Chrome profile in system mode. |
 | `timeout_ms` | `30000` | Playwright default timeout. |
 | `viewport_width` / `viewport_height` | `1366` / `900` | |
 

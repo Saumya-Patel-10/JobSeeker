@@ -14,7 +14,7 @@ def profile_based_browser_health(*, source_label: str) -> SourceHealth:
     cfg = load_config().preferences.browser
     if not cfg.persistent_profile:
         return SourceHealth(
-            status="unknown",
+            status="degraded",
             message=f"{source_label}: enable persistent_profile for session reuse",
             authenticated=False,
         )
@@ -47,7 +47,7 @@ def profile_based_browser_health(*, source_label: str) -> SourceHealth:
         )
     if health.locked:
         return SourceHealth(
-            status="unknown",
+            status="degraded",
             message=f"{source_label}: profile locked — close Firefox or use clone-on-lock",
             authenticated=False,
         )

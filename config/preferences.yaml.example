@@ -15,7 +15,11 @@ browser:
   engine: chromium
   channel: chrome
   persistent_profile: true
+  # profile_source: system uses your own installed Chrome profile (signed in
+  # with account_email). Close all Chrome windows before running automation.
   profile_source: managed
+  chrome_profile: null
+  account_email: null
   firefox_profile: null
   headless: false
   slowmo_ms: 50
