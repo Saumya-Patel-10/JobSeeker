@@ -1,8 +1,18 @@
-# JobSeeker (v1.2)
+# JobSeeker (v1.3)
 
 An **AI-powered job discovery and application platform** combining a supervised local-first automation console with intelligent resume tailoring, multi-board scraping, and unified cloud workflows. Runs on your machine with local LLMs (LM Studio, Ollama) or cloud providers, automates form filling, and provides full human-in-the-loop control.
 
-> **Status:** v1.1 — Unified `JobApplicationOrchestrator` pipeline, expanded multi-source ingestion (Greenhouse, Lever, LinkedIn, Raytheon, Ashby, SmartRecruiters, Workday), deterministic Playwright automation, tailored resume/cover letter generation, Control Center UI, Live Browser panel, Approval queue, Celery-based background workers, and optional SaaS API layer.
+> **Status:** v1.3 — Google Chrome automation on **your own Chrome profile** (auto-selected by your signed-in Google account), guided login CLI, multi-company API discovery (Greenhouse/Lever/Ashby/Workday/SmartRecruiters), internship-tuned defaults, master resume PDF upload, and unified JobSeeker branding.
+
+## What's new in v1.3
+
+- **Chrome replaces Firefox.** The automation engine is now `chromium` with `channel: chrome`, launching your installed Google Chrome.
+- **Use your own Chrome profile.** `profile_source: system` attaches automation to your real Chrome profile — including existing logins on LinkedIn, Indeed, and company career sites. The profile signed in with `browser.account_email` is selected automatically.
+- **Guided login.** `jobassist browser-login` opens Chrome with the configured profile and prompts you to sign in once; `browser-check-login` verifies the session later.
+- **Internship-oriented defaults.** Intern/co-op keywords, hourly salary expectations (25-30/hr) with correct hourly-annual salary normalization in the discovery filter, and citizenship/clearance exclusions that drop ineligible defense postings before LLM scoring.
+- **Safety default restored.** `allow_auto_submit` is `false` again — every submission requires explicit approval in the Review Queue.
+- **Master resume upload.** Upload your master resume PDF from the Resume Studio (`POST /profile/master-resume/upload`).
+- **Dead sources removed.** Indeed/Glassdoor/L3Harris/TI stub adapters are gone from the default configuration.
 
 ## What it does
 
@@ -39,7 +49,7 @@ npm run dev
 
 | Command | Purpose |
 |---------|--------|
-| `bootstrap` | Install backend + frontend deps, install Playwright Firefox, init DB |
+| `bootstrap` | Install backend + frontend deps, install Playwright browsers, init DB |
 | `dev` | Start backend + frontend with health checks |
 | `backend` | Start only the FastAPI backend |
 | `frontend` | Start only the Next.js frontend |
@@ -69,7 +79,10 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
-python -m playwright install firefox
+# Chrome is launched via the installed Google Chrome (channel: chrome).
+# Optional: install Playwright's bundled Chromium as a fallback if you ever
+# remove channel: chrome from preferences.yaml.
+python -m playwright install chromium
 python -m app.cli.main init
 ```
 
@@ -144,9 +157,24 @@ jobseeker --help
 | `list-applications [--status STATUS] [-n N]` | Show recent applications. |
 | `export [--format json\|csv] [-o file]` | Dump applications for record keeping. |
 | `runtime-check` | Verify automation runtime and browser session health. |
-| `browser-profiles` | List available Firefox browser profiles. |
-| `browser-clone <name>` | Clone a Firefox profile. |
-| `browser-activate <name>` | Set the active Firefox profile for automation. |
+| `browser-chrome-profiles` | List your real Google Chrome profiles (display name, signed-in account, last-used). |
+| `browser-chrome-activate [dir]` | Point automation at one of your own Chrome profiles; omit the argument to auto-select the profile signed in with `account_email`. |
+| `browser-login` | Open Chrome with the configured profile and prompt you to sign in (Google, LinkedIn); the session persists for future runs. |
+| `browser-check-login` | Verify the configured Chrome profile is still signed in to Google. |
+| `browser-profiles` | List Firefox profiles (legacy, only relevant when `engine: firefox`). |
+| `browser-clone <name>` | Clone a Firefox profile (legacy). |
+| `browser-activate <name>` | Set the active Firefox profile (legacy). |
+
+### Browser automation (Chrome)
+
+Automation runs in **Google Chrome** via Playwright (`engine: chromium`, `channel: chrome`). Two profile modes:
+
+| `profile_source` | Behaviour |
+|------------------|-----------|
+| `system` (default) | Uses **your own Chrome profile** with your existing logins. The profile is chosen by `chrome_profile`, else by the profile signed in with `account_email`, else Chrome's last-used profile. **Close all Chrome windows before running automation** — Chrome cannot share a running profile, and the app fails fast with a clear message if it is locked. |
+| `managed` | Uses an isolated automation profile under `data/browser_profiles/`. Sign in once via `jobassist browser-login`; cookies persist across runs. |
+
+Recommended first-run flow: `jobassist browser-chrome-profiles` to see your profiles, `jobassist browser-chrome-activate` to pick one (or rely on `account_email` auto-selection), then `jobassist browser-login` once.
 
 ## FastAPI backend
 
@@ -167,6 +195,8 @@ OpenAPI docs at `http://127.0.0.1:8000/docs`.
 | GET/PATCH | `/applications`, `/applications/{id}` | Read + status updates |
 | GET | `/resumes/job/{id}`, `/resumes/{id}/download/{docx\|pdf}` | List and download |
 | GET/PUT | `/profile` | Read / update validated profile |
+| POST | `/profile/master-resume/upload` | Upload the master resume PDF |
+| GET | `/profile/master-resume/info` | Master resume metadata |
 | GET/POST | `/scoring/{job_id}`, `/scoring/{job_id}/rescore` | Fetch or recompute score |
 | GET | `/jobs/{id}/workspace` | Combined job analysis workspace |
 | GET/PUT | `/settings`, `/settings/{section}` | Editable config APIs |
@@ -250,18 +280,17 @@ The `SourceOrchestrator` (`app/sources/`) dispatches discovery across all regist
 
 | Source | Status | Notes |
 |--------|--------|-------|
-| Greenhouse (multi-board) | ✅ Full | API-based; no browser required |
-| Lever | ✅ Full | API-based |
-| LinkedIn | ✅ Browser | Easy Apply assist only — never auto-submits (ToS) |
-| Raytheon | ✅ Browser | Full Playwright scraper |
-| Ashby | ✅ Full | API-based |
-| SmartRecruiters | ✅ Full | API-based |
-| Workday | ✅ Browser | Playwright-based |
-| Indeed | 🔧 Scaffolded | Stub — enable when ready |
-| Glassdoor | 🔧 Scaffolded | Stub — enable when ready |
-| L3Harris | 🔧 Scaffolded | Stub — enable when ready |
-| Texas Instruments | 🔧 Scaffolded | Stub — enable when ready |
+| Greenhouse (multi-board) | ✅ Full | API-based; no browser required; 60+ companies |
+| Lever (multi-board) | ✅ Full | API-based; 25+ startups |
+| Ashby (multi-org) | ✅ Full | GraphQL API; modern startups |
+| Workday | ✅ Full | Semi-public API; FAANG + enterprise |
+| SmartRecruiters | ✅ Full | Public REST API |
+| LinkedIn | ✅ Browser | Search via your Chrome profile; Easy Apply assist only — never auto-submits (ToS) |
+| Raytheon | ⏸ Disabled | Real browser adapter, but most roles require US citizenship — keep the citizenship `excluded_keywords` if you enable it |
+| Manual URL list | ✅ Full | Paste specific job URLs in `config/job_sources.yaml` |
 | Generic fallback | ✅ Full | Handles arbitrary company pages |
+
+Removed in v1.3: the Indeed, Glassdoor, L3Harris, and Texas Instruments stub adapters no longer ship in the default configuration.
 
 Configure active sources in `config/job_sources.yaml`.
 
@@ -348,7 +377,7 @@ See [`docs/architecture.md`](docs/architecture.md) for the full component map an
 | File | Description |
 |------|-------------|
 | [`ORCHESTRATOR.md`](ORCHESTRATOR.md) | Orchestrator architecture, API endpoints, migration guide |
-| [`FIREFOX_SETUP.md`](FIREFOX_SETUP.md) | Firefox profile / session reuse setup |
+| [`FIREFOX_SETUP.md`](FIREFOX_SETUP.md) | Legacy Firefox profile setup (only relevant when `engine: firefox`) |
 | [`UserManual.MD`](UserManual.MD) | Step-by-step user operations guide |
 | [`docs/setup.md`](docs/setup.md) | Installation, prerequisites, verification |
 | [`docs/configuration.md`](docs/configuration.md) | Every YAML/JSON setting |
@@ -374,7 +403,7 @@ See [`docs/architecture.md`](docs/architecture.md) for the full component map an
 - FastAPI + Uvicorn
 - Pydantic v2 + Pydantic-Settings
 - SQLAlchemy 2 (async) + aiosqlite
-- Playwright (Firefox, persistent profiles)
+- Playwright (Google Chrome / Chromium, persistent profiles)
 - Typer + Rich (CLI)
 - structlog (JSON file logs + colored console)
 - LM Studio (OpenAI-compatible) + Ollama
