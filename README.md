@@ -1,64 +1,69 @@
-# JobSeeker (v1.1)
+# JobSeeker (v1.2)
 
 An **AI-powered job discovery and application platform** combining a supervised local-first automation console with intelligent resume tailoring, multi-board scraping, and unified cloud workflows. Runs on your machine with local LLMs (LM Studio, Ollama) or cloud providers, automates form filling, and provides full human-in-the-loop control.
 
-> **Status:** v1.1 — Integrated Command Center dashboard, multi-source ingestion (Greenhouse, Lever, LinkedIn, Indeed), deterministic Playwright automation, tailored resume/cover letter generation, and unified API runtime.
+> **Status:** v1.1 — Unified `JobApplicationOrchestrator` pipeline, expanded multi-source ingestion (Greenhouse, Lever, LinkedIn, Raytheon, Ashby, SmartRecruiters, Workday), deterministic Playwright automation, tailored resume/cover letter generation, Control Center UI, Live Browser panel, Approval queue, Celery-based background workers, and optional SaaS API layer.
 
 ## What it does
 
-1. **Ingest** a job posting from a URL (Greenhouse, Lever, LinkedIn, or any
-   company page via the generic fallback).
-2. **Score** the job against your profile + resume using a local LLM,
-   producing a fit score, skill overlap, seniority alignment, and more.
-3. **Tailor** your master resume to the job: re-ranks skills, rewrites
-   bullets, renders DOCX + PDF.
-4. **Cover letter** generation in your voice — no clichés, no invented
-   experience.
-5. **Auto-fill** the application form (Playwright, deterministic), then stop
-   for human review by default. Opt-in `--auto` requires an explicit
-   config flag.
-6. **Track** everything in a local SQLite database. Question/answer memory
-   in ChromaDB.
+1. **Discover** jobs automatically from multiple boards (Greenhouse, Lever, LinkedIn, Raytheon, Ashby, SmartRecruiters, Workday) via the unified `SourceOrchestrator`, or ingest individual posting URLs.
+2. **Score** each job against your profile + resume using a local LLM — fit score, skill overlap, seniority alignment, and more.
+3. **Tailor** your master resume to the job: re-ranks skills, rewrites bullets, renders DOCX + PDF.
+4. **Cover letter** generation in your voice — no clichés, no invented experience.
+5. **Auto-fill** the application form (Playwright, deterministic), then **stop for human review** by default. An explicit `--auto` flag + config toggle is required to submit autonomously.
+6. **Approval queue** — every prepared application lands in `awaiting_approval`; approve (and optionally submit) via the UI or CLI.
+7. **Track** everything in a local SQLite database. Question/answer memory in ChromaDB.
+8. **Control Center UI** — start/pause/stop the job hunt, monitor live pipeline stage, review the approval queue, manage blacklist suggestions, and watch a live browser feed — all from a Next.js dashboard at `http://localhost:3000`.
 
-Reasoning is delegated to a local LLM. Browser interaction is deterministic
-Playwright code. The AI never clicks random buttons.
+Reasoning is delegated to a local LLM. Browser interaction is deterministic Playwright code. The AI never clicks random buttons.
+
+---
 
 ## Quickstart
 
 ### Preferred (unified runtime)
 
 ```bash
-pnpm bootstrap
-pnpm dev
+pnpm bootstrap    # install deps, Playwright Firefox, init DB
+pnpm dev          # start backend + frontend together with health checks
 ```
 
-or:
+or with npm:
 
 ```bash
 npm run bootstrap
 npm run dev
 ```
 
-This starts backend + frontend together and performs health checks.
+### Available `npm` / `pnpm` / `make` commands
 
-### Manual bootstrap scripts (legacy)
+| Command | Purpose |
+|---------|--------|
+| `bootstrap` | Install backend + frontend deps, install Playwright Firefox, init DB |
+| `dev` | Start backend + frontend with health checks |
+| `backend` | Start only the FastAPI backend |
+| `frontend` | Start only the Next.js frontend |
+| `doctor` | Run runtime diagnostics |
+| `install` | Install backend/frontend dependencies only |
+| `lint` | Run backend (Ruff) + frontend (ESLint) checks |
+| `test` | Run backend pytest + frontend TypeScript checks |
+| `fmt` | Format Python files with Black |
+| `type` | Run mypy type checks |
+| `clean` | Remove build/cache artefacts |
 
-### 1. Bootstrap
+### Manual bootstrap (legacy scripts)
 
-Windows:
-
+**Windows:**
 ```powershell
 .\scripts\bootstrap.ps1
 ```
 
-macOS / Linux:
-
+**macOS / Linux:**
 ```bash
 bash scripts/bootstrap.sh
 ```
 
-Or manually:
-
+**Or step-by-step:**
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -68,30 +73,31 @@ python -m playwright install firefox
 python -m app.cli.main init
 ```
 
-### 2. Edit your data
+---
 
-- `config/profile.yaml` — your name, contact, work auth, salary, etc.
-- `config/resume_master.json` — your real career data.
-- `config/preferences.yaml` — LLM provider, scoring weights, browser config.
+## Configuration
 
-These three files hold personal data and are **git-ignored**. Only the
-`config/*.example` templates are committed; the real files are created from
-them automatically the first time the app runs, so just edit the copies.
+Edit these three files (created automatically from `config/*.example` templates on first run — they are **git-ignored**):
 
-### 3. Start a local LLM
+| File | Purpose |
+|------|--------|
+| `config/profile.yaml` | Name, contact, work auth, salary, location preferences |
+| `config/resume_master.json` | Real career data (the source of truth for tailoring) |
+| `config/preferences.yaml` | LLM provider, scoring weights, browser config, auto-submit toggle |
 
-- LM Studio: Developer mode → Start server on port 1234 → load any chat
-  model (7B+ instruct works well).
-- OR Ollama: `ollama pull llama3.1:8b-instruct`; set `provider: ollama` and
-  `base_url: http://localhost:11434` in `preferences.yaml`.
 
-### 4. Verify
+### Start a local LLM
+
+- **LM Studio**: Developer mode → Start server on port `1234` → load any chat model (7B+ instruct recommended).
+- **Ollama**: `ollama pull llama3.1:8b-instruct`; set `provider: ollama` and `base_url: http://localhost:11434` in `preferences.yaml`.
+
+### Verify setup
 
 ```powershell
 python -m app.cli.main doctor
 ```
 
-### 5. Try it
+### Quick try
 
 ```powershell
 # Ingest one job
@@ -113,23 +119,21 @@ python -m app.cli.main apply 1
 python -m app.cli.main review --approve 1
 ```
 
-### 6. Launch the operations console (frontend)
-
-```powershell
-cd frontend
-copy .env.local.example .env.local
-npm install
-npm run dev
-```
-
-Open `http://localhost:3000`.
+Open `http://localhost:3000` for the full Control Center UI.
 
 ## CLI reference
 
+```powershell
+python -m app.cli.main --help
+# or the installed entry-points:
+jobassist --help
+jobseeker --help
+```
+
 | Command | Purpose |
-| --- | --- |
+|---------|--------|
 | `init` | Create data directories + SQLite database. Idempotent. |
-| `doctor` | Run health checks: Python, configs, DB, LLM, Playwright. |
+| `doctor` | Health checks: Python, configs, DB, LLM, Playwright. |
 | `search [--limit N]` | Pull jobs from every enabled source in `job_sources.yaml`. |
 | `ingest-url <url>` | Ingest a single posting. |
 | `analyze <job_id>` | Score an ingested job with the LLM. |
@@ -139,80 +143,256 @@ Open `http://localhost:3000`.
 | `review [--approve N] [--reject N]` | List or update applications awaiting review. |
 | `list-applications [--status STATUS] [-n N]` | Show recent applications. |
 | `export [--format json\|csv] [-o file]` | Dump applications for record keeping. |
+| `runtime-check` | Verify automation runtime and browser session health. |
+| `browser-profiles` | List available Firefox browser profiles. |
+| `browser-clone <name>` | Clone a Firefox profile. |
+| `browser-activate <name>` | Set the active Firefox profile for automation. |
 
-## FastAPI inspection layer
+## FastAPI backend
+
+### Start
 
 ```powershell
 python -m uvicorn app.api.main:app --reload
 ```
 
-OpenAPI docs at `http://127.0.0.1:8000/docs`. Routes:
+OpenAPI docs at `http://127.0.0.1:8000/docs`.
 
-- `GET /status` — health + provider reachability.
-- `GET /jobs`, `GET /jobs/{id}` — list/detail.
-- `GET /applications`, `GET /applications/{id}`, `PATCH /applications/{id}` — read + status updates.
-- `GET /resumes/job/{id}`, `GET /resumes/{id}/download/{docx|pdf}` — list and download.
-- `GET /profile`, `PUT /profile` — read/update validated profile.
-- `GET /scoring/{job_id}`, `POST /scoring/{job_id}/rescore` — fetch or recompute.
-- `GET /jobs/{id}/workspace` — combined job analysis workspace.
-- `GET /settings`, `PUT /settings/{section}` — editable config APIs.
-- `GET /automation/*` — automation sessions/events/screenshots.
-- `GET /ai/activity`, `GET /ai/summary` — AI trace stream + metrics.
-- `GET /analytics/summary` — funnel + source effectiveness analytics.
-- `GET /browser/profiles`, `GET /browser/health` — Firefox profile management and runtime session health.
-- `POST /browser/profiles/clone`, `PUT /browser/active` — clone/select active Firefox profiles.
+### Core routes
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/status` | Health + LLM/DB/browser reachability |
+| GET/POST | `/jobs`, `/jobs/{id}` | List / ingest / detail |
+| GET/PATCH | `/applications`, `/applications/{id}` | Read + status updates |
+| GET | `/resumes/job/{id}`, `/resumes/{id}/download/{docx\|pdf}` | List and download |
+| GET/PUT | `/profile` | Read / update validated profile |
+| GET/POST | `/scoring/{job_id}`, `/scoring/{job_id}/rescore` | Fetch or recompute score |
+| GET | `/jobs/{id}/workspace` | Combined job analysis workspace |
+| GET/PUT | `/settings`, `/settings/{section}` | Editable config APIs |
+| GET | `/automation/*` | Automation sessions / events / screenshots |
+| GET | `/ai/activity`, `/ai/summary` | AI trace stream + metrics |
+| GET | `/analytics/summary` | Funnel + source effectiveness analytics |
+| GET | `/browser/profiles`, `/browser/health` | Firefox profile list + runtime health |
+| POST/PUT | `/browser/profiles/clone`, `/browser/active` | Clone / select active Firefox profile |
+| GET | `/sources` | Job source configuration |
+| GET | `/blacklist/suggestions` | AI-generated blacklist suggestions |
+| POST | `/blacklist/suggestions/{id}/approve\|reject` | Approve or dismiss blacklist suggestions |
+
+### Orchestrator routes
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/orchestrator/status` | Full `OrchestratorStatus` (stage, queue, stats) |
+| POST | `/orchestrator/start` | Start supervised hunt loop |
+| POST | `/orchestrator/pause` | Pause loop |
+| POST | `/orchestrator/resume` | Resume loop |
+| POST | `/orchestrator/stop` | Stop loop |
+
+### Control Center routes (UI aliases)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/control-center/job-hunt/status` | Same as orchestrator status |
+| POST | `/control-center/job-hunt/start\|pause\|resume\|stop` | Hunt lifecycle |
+| POST | `/control-center/search` | Discovery + ingest only |
+| POST | `/control-center/ingest` | Manual URL ingest |
+
+### Approvals & submission
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/approvals/pending` | Pending checkpoints |
+| POST | `/approvals/{id}/approve?submit=true` | Approve + optionally submit |
+
+### WebSocket
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /ws/events` | Live event stream — browser actions, screenshots, pipeline progress |
+
+### SaaS API layer (`/api/v1`)
+
+An optional SaaS-ready API layer loaded dynamically (skipped gracefully if dependencies are absent):
+
+| Prefix | Description |
+|--------|-------------|
+| `/api/v1/auth` | JWT authentication (register / login / refresh) |
+| `/api/v1/users` | User management |
+| `/api/v1/resumes` | Per-user resume management |
+| `/api/v1/jobs` | Per-user job management |
+| `/api/v1/applications` | Per-user application management |
+| `/api/v1/subscriptions` | Stripe subscription management |
+| `/ws/v1` | Per-user WebSocket events |
+
+## Frontend (Next.js 16 / React 19)
+
+Starts at `http://localhost:3000`. Pages:
+
+| Route | Description |
+|-------|-------------|
+| `/dashboard` | Overview — recent jobs, application funnel, quick stats |
+| `/jobs` | Job board — list, filter, ingest, and score jobs |
+| `/control-center` | Start / pause / stop the hunt; live pipeline stage; source health |
+| `/live-browser` | Real-time browser screenshot feed + action log over WebSocket |
+| `/review-queue` | Approval checkpoints — review and approve/reject before submit |
+| `/resume-studio` | Tailored resume previewer + download (DOCX / PDF) |
+| `/ai-console` | AI activity log, trace stream, metrics |
+| `/analytics` | Funnel charts, source effectiveness, application trends |
+| `/profile` | Edit profile and resume master data |
+| `/settings` | Edit app preferences and LLM config |
+
+---
+
+## Job Sources
+
+The `SourceOrchestrator` (`app/sources/`) dispatches discovery across all registered sources:
+
+| Source | Status | Notes |
+|--------|--------|-------|
+| Greenhouse (multi-board) | ✅ Full | API-based; no browser required |
+| Lever | ✅ Full | API-based |
+| LinkedIn | ✅ Browser | Easy Apply assist only — never auto-submits (ToS) |
+| Raytheon | ✅ Browser | Full Playwright scraper |
+| Ashby | ✅ Full | API-based |
+| SmartRecruiters | ✅ Full | API-based |
+| Workday | ✅ Browser | Playwright-based |
+| Indeed | 🔧 Scaffolded | Stub — enable when ready |
+| Glassdoor | 🔧 Scaffolded | Stub — enable when ready |
+| L3Harris | 🔧 Scaffolded | Stub — enable when ready |
+| Texas Instruments | 🔧 Scaffolded | Stub — enable when ready |
+| Generic fallback | ✅ Full | Handles arbitrary company pages |
+
+Configure active sources in `config/job_sources.yaml`.
+
+---
+
+## ATS Adapters
+
+Form-fill adapters (`app/ats/`):
+
+| Adapter | Supported board |
+|---------|-----------------|
+| `GreenhouseAdapter` | boards.greenhouse.io |
+| `LeverAdapter` | jobs.lever.co |
+| `LinkedInAdapter` | linkedin.com/jobs (assist only) |
+| `GenericAdapter` | Any company page (heuristic field detection) |
+
+---
+
+## Orchestrator Pipeline
+
+The `JobApplicationOrchestrator` runs a supervised, multi-stage loop:
+
+```
+Discover → Filter → Score → Tailor → Prepare (fill) → STOP (approval) → Submit (if approved)
+```
+
+See [`ORCHESTRATOR.md`](ORCHESTRATOR.md) for the full flowchart and API reference.
+
+---
+
+## Background Workers (Celery — optional / SaaS mode)
+
+For higher-throughput or multi-user deployments, Celery workers distribute tasks:
+
+| Worker | Queue | Role |
+|--------|-------|------|
+| `celery_ai_worker` | `ai_queue` | Resume tailoring, cover letter, LLM calls (4 concurrent) |
+| `celery_bot_worker` | `bot_queue` | Playwright browser automation (2 concurrent) |
+| `celery_beat` | — | Cron scheduler — job discovery every 30 min, daily credit reset |
+| Flower | — | Web monitoring dashboard at `:5555` |
+
+Requires **Redis** (broker + result backend) — configured via `REDIS_URL` in `.env`.
+
+---
+
+## Docker Compose (SaaS / cloud mode)
+
+For a fully containerised deployment with PostgreSQL, Redis, and Celery:
+
+```bash
+cp .env.example .env   # fill in secrets
+docker compose up
+```
+
+Services: `db` (PostgreSQL 16), `redis` (7), `api` (FastAPI), `celery_ai_worker`, `celery_bot_worker`, `celery_beat`, `flower`.
+
+See [`.env.example`](.env.example) for all required environment variables (database, Redis, OpenAI, AWS S3, Stripe, SMTP, CORS).
+
+---
 
 ## Architecture
 
-See [`docs/architecture.md`](docs/architecture.md) for the full component
-map and pipeline flow. Short version:
+```
+CLI / API → JobApplicationOrchestrator
+                │
+    ┌───────────┼──────────────┐
+    │           │              │
+SourceOrchestrator  Pipelines  ApprovalService
+(app/sources/*)  (ingest/score/  (pre-submit gate)
+                  tailor/apply)
+                │
+     ┌──────────┼──────────┐
+     │          │          │
+  ATS adapters  LLM     Resume engine
+  (Playwright)  provider  (DOCX + PDF)
+                │
+          SQLite + ChromaDB
+```
 
-```
-CLI / API → Pipelines → (ATS adapters | LLM provider | resume engine | DB)
-                            │
-                  Playwright (deterministic actions, persistent profile)
-                            │
-              LM Studio / Ollama (reasoning only, structured JSON)
-```
+See [`docs/architecture.md`](docs/architecture.md) for the full component map and pipeline diagram.
 
 ## Documentation
 
-- [`FIREFOX_SETUP.md`](FIREFOX_SETUP.md) - Firefox profile/session reuse setup.
-- [`UserManual.MD`](UserManual.MD) - step by step user operations guide.
-- [`docs/setup.md`](docs/setup.md) — installation, prerequisites, verification.
-- [`docs/configuration.md`](docs/configuration.md) — every YAML/JSON setting.
-- [`docs/architecture.md`](docs/architecture.md) — component diagram + module responsibilities.
-- [`docs/development.md`](docs/development.md) — layout, commands, testing.
-- [`docs/troubleshooting.md`](docs/troubleshooting.md) — common gotchas.
-- [`docs/adapter_guide.md`](docs/adapter_guide.md) — write a new ATS adapter.
+| File | Description |
+|------|-------------|
+| [`ORCHESTRATOR.md`](ORCHESTRATOR.md) | Orchestrator architecture, API endpoints, migration guide |
+| [`FIREFOX_SETUP.md`](FIREFOX_SETUP.md) | Firefox profile / session reuse setup |
+| [`UserManual.MD`](UserManual.MD) | Step-by-step user operations guide |
+| [`docs/setup.md`](docs/setup.md) | Installation, prerequisites, verification |
+| [`docs/configuration.md`](docs/configuration.md) | Every YAML/JSON setting |
+| [`docs/architecture.md`](docs/architecture.md) | Component diagram + module responsibilities |
+| [`docs/development.md`](docs/development.md) | Repo layout, commands, testing |
+| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Common gotchas |
+| [`docs/adapter_guide.md`](docs/adapter_guide.md) | Write a new ATS adapter |
+| [`docs/browser-automation.md`](docs/browser-automation.md) | Playwright browser automation internals |
 
-## Safety / non-goals
+## Safety & non-goals
 
-- **LinkedIn is assist-only.** The adapter fills the Easy Apply form and
-  stops before Submit. Auto-submitting on LinkedIn violates their ToS.
-  This is enforced in code, not just a setting.
-- **Auto-submit is opt-in twice.** It requires both
-  `apply.allow_auto_submit: true` in `preferences.yaml` AND the `--auto`
-  flag on the CLI invocation. Either alone falls back to human review.
-- **No captcha bypass.** If an application page presents a captcha, the
-  adapter stops and screenshots so you can complete it manually.
-- **Quality follows your model.** A 3B model will write worse bullets than
-  a 70B model. Pick the largest model your machine can run.
+- **LinkedIn is assist-only.** The adapter fills the Easy Apply form and stops before Submit. Auto-submitting on LinkedIn violates their ToS — this is enforced in code, not just a config flag.
+- **Auto-submit is opt-in twice.** Requires both `apply.allow_auto_submit: true` in `preferences.yaml` **and** the `--auto` CLI flag. Either alone falls back to human review.
+- **Approval checkpoint.** Every application lands in `awaiting_approval` before any submission attempt. The UI/CLI must explicitly approve it.
+- **No captcha bypass.** If an application page shows a captcha, the adapter stops and screenshots so you can complete it manually.
+- **Quality follows your model.** A 3B model will write worse bullets than a 70B model. Pick the largest model your machine can run.
+- **Blacklist suggestions are user-approved.** The AI may suggest adding a company to the blacklist; it only takes effect after you approve it in the Control Center.
 
 ## Tech stack
 
+**Backend**
 - Python 3.12+
 - FastAPI + Uvicorn
-- Pydantic 2 + Pydantic-Settings
+- Pydantic v2 + Pydantic-Settings
 - SQLAlchemy 2 (async) + aiosqlite
-- Playwright
-- Typer + Rich
+- Playwright (Firefox, persistent profiles)
+- Typer + Rich (CLI)
 - structlog (JSON file logs + colored console)
 - LM Studio (OpenAI-compatible) + Ollama
-- ChromaDB (with bundled MiniLM)
-- python-docx + reportlab
-- httpx + tenacity
-- pytest + pytest-asyncio + respx
+- ChromaDB + bundled MiniLM (question memory / vector search)
+- python-docx + reportlab (DOCX/PDF rendering)
+- httpx + tenacity (resilient HTTP)
+- BeautifulSoup4 + lxml + selectolax (HTML parsing)
+- Celery + Redis (optional background workers)
+- pytest + pytest-asyncio + respx (testing)
+
+**Frontend**
+- Next.js 16 + React 19 + TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- Framer Motion (animations)
+- TanStack Query v5 + Zustand
+- TanStack Table v8 + Recharts
+- React Hook Form + Zod
+- Lucide React + Sonner
 
 ## License
 
