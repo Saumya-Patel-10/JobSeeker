@@ -8,7 +8,12 @@ llm:
   max_retries: 3
   temperature: 0.2
 browser:
-  engine: firefox
+  # Chrome via Playwright. 'channel: chrome' launches the locally installed
+  # Google Chrome; remove 'channel' to fall back to Playwright's bundled
+  # Chromium. persistent_profile keeps cookies/logins under
+  # data/browser_profiles/<profile>, so sign in once and it persists.
+  engine: chromium
+  channel: chrome
   persistent_profile: true
   profile_source: managed
   firefox_profile: null
@@ -25,20 +30,20 @@ browser:
 apply:
   default_mode: human_review
   allow_auto_submit: false
-  daily_limit: 20
+  daily_limit: 30
   require_min_score: 0.6
   confirm_before_submit: true
-automation:
-  max_concurrent_sessions: 1
-  cooldown_seconds: 90
-  default_interval_minutes: 30
 scoring:
   weights:
-    skill_overlap: 0.35
-    seniority_alignment: 0.15
-    salary_fit: 0.10
+    skill_overlap: 0.4
+    seniority_alignment: 0.2
+    salary_fit: 0.1
     location_compatibility: 0.15
-    fit_score: 0.20
+    fit_score: 0.15
+automation:
+  max_concurrent_sessions: 3
+  cooldown_seconds: 120
+  default_interval_minutes: 90
 seniority: null
 locations:
 - Austin, TX
@@ -68,17 +73,26 @@ role_keywords:
 - cloud engineer
 - platform engineer
 - devops
+- intern
+- internship
+- software engineer intern
+- software developer intern
+- co-op
 excluded_keywords:
 - unpaid
 - commission only
+- citizenship required
+- security clearance required
+- u.s. citizen
+- us citizen
 excluded_titles:
 - staff augmentation
 - contractor only
 preferred_industries: []
 target_companies: []
-remote_preference: no_preference
 salary_expectations:
-  min: null
-  max: null
+  min: 25
+  max: 30
   currency: USD
-  period: year
+  period: hour
+remote_preference: no_preference

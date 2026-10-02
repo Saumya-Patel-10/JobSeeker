@@ -38,6 +38,10 @@ class BrowserConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     engine: Literal["firefox", "chromium", "webkit"] = "firefox"
+    # Optional Playwright browser channel, e.g. "chrome" or "msedge".
+    # Only used when engine is "chromium"; launches the locally installed
+    # branded browser instead of Playwright's bundled Chromium build.
+    channel: str | None = None
     persistent_profile: bool = True
     profile_source: Literal["managed", "system"] = "managed"
     firefox_profile: str | None = None
@@ -117,17 +121,26 @@ class Preferences(BaseModel):
 
 
 JobSourceType = Literal[
+    # ── Legacy / single-board ───────────────────────────────────────────────
     "greenhouse_board",
     "lever_board",
     "url_list",
     "rss",
     "career_site",
+    # ── Browser-based adapters ──────────────────────────────────────────────
     "linkedin_search",
     "raytheon_careers",
     "indeed_search",
     "glassdoor_search",
     "l3harris_careers",
     "ti_careers",
+    # ── Multi-company API adapters (Jobright-style) ─────────────────────────
+    "greenhouse_multi",
+    "lever_multi",
+    "ashby",
+    "ashby_multi",
+    "workday",
+    "smartrecruiters",
 ]
 
 
@@ -136,7 +149,9 @@ class JobSource(BaseModel):
 
     name: str
     type: JobSourceType
-    config: dict[str, str | list[str] | int | bool] = Field(default_factory=dict)
+    # config values can be: strings, lists of strings, ints, bools,
+    # dicts (e.g. Workday company objects), or lists of dicts.
+    config: dict[str, str | list | int | bool | dict] = Field(default_factory=dict)
     enabled: bool = True
 
 

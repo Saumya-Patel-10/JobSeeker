@@ -12,7 +12,8 @@ llm:
   max_retries: 3
   temperature: 0.2
 browser:
-  engine: firefox
+  engine: chromium
+  channel: chrome
   persistent_profile: true
   profile_source: managed
   firefox_profile: null

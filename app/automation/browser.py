@@ -1,4 +1,4 @@
-﻿"""Playwright wrapper that prefers Firefox persistent contexts."""
+"""Playwright wrapper that prefers Firefox persistent contexts."""
 
 from __future__ import annotations
 
@@ -60,10 +60,12 @@ class BrowserSession:
         try:
             self._pw = await async_playwright().start()
             browser_type = self._browser_type()
+            channel = self._resolve_channel()
             if self.config.persistent_profile:
                 user_data_dir, profile_label = self._resolve_user_data_dir()
                 self._context = await browser_type.launch_persistent_context(
                     user_data_dir=str(user_data_dir),
+                    channel=channel,
                     headless=self.config.headless,
                     slow_mo=self.config.slowmo_ms,
                     locale=self.config.locale,
@@ -77,6 +79,7 @@ class BrowserSession:
             else:
                 profile_label = "ephemeral"
                 self._browser = await browser_type.launch(
+                    channel=channel,
                     headless=self.config.headless,
                     slow_mo=self.config.slowmo_ms,
                 )
@@ -204,6 +207,20 @@ class BrowserSession:
             get_automation_runtime().log_action(action, detail=detail)
         except Exception:
             get_event_bus().emit("browser.action", {"action": action, "detail": detail})
+
+    def _resolve_channel(self) -> str | None:
+        """Resolve the Playwright channel (e.g. installed Chrome/Edge).
+
+        Only applies to Chromium-family engines; Firefox/WebKit ignore it.
+        A configured channel that is not installed surfaces as a launch
+        failure via the normal BrowserError path in ``start()``.
+        """
+        if self._pw is None:
+            raise BrowserError("Playwright engine not initialized")
+        channel = self.config.channel
+        if not channel or self.config.engine != "chromium":
+            return None
+        return channel
 
     def _browser_type(self):
         if self._pw is None:

@@ -38,7 +38,9 @@ Validated against `app/config/schema.py:Preferences`.
 
 | Key | Default | Notes |
 | --- | --- | --- |
-| `headless` | `false` | Start headed so you can log into LinkedIn etc. once; subsequent runs reuse cookies. |
+| `engine` | `firefox` | Playwright engine: `firefox`, `chromium`, or `webkit`. Use `chromium` for Chrome-family browsers. |
+| `channel` | `null` | Optional Playwright channel (only with `engine: chromium`), e.g. `chrome` or `msedge` — launches the locally installed branded browser instead of the bundled Chromium build. Requires that browser to be installed. |
+| `headless` | `false` | Start headed so you can log into LinkedIn/Google etc. once; subsequent runs reuse cookies from the persistent profile. |
 | `slowmo_ms` | `50` | Per-action throttle. |
 | `profile` | `default` | Subdirectory of `data/browser_profiles/`. |
 | `timeout_ms` | `30000` | Playwright default timeout. |
