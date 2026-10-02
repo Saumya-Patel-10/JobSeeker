@@ -1,7 +1,29 @@
-# Job Finding Assistant — discovery sources (polled by DiscoveryScheduler).
-# Enable sources in Control Center or set enabled: true here.
+# ══════════════════════════════════════════════════════════════════════════════
+# Job Finding Assistant — Master Discovery Sources
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# Jobright-style multi-ATS coverage. Each source fans out to many companies.
+#
+#  Source Type           | Companies Covered         | How it Works
+#  ──────────────────────┼───────────────────────────┼─────────────────────────
+#  greenhouse_multi      | 60+ AI/SaaS/Fintech       | Free public JSON API
+#  lever_multi           | 25+ startups              | Free public JSON API
+#  ashby_multi           | 20+ modern startups       | Free public GraphQL API
+#  workday               | Google, Meta, MSFT, NVDA  | Semi-public Workday API
+#  smartrecruiters       | Zoom, Visa, Bosch etc.    | Free public REST API
+#  linkedin_search       | All companies             | Browser (Firefox) ✓
+#  indeed_search         | All companies             | Browser (Firefox)
+#  greenhouse_board      | Single company boards     | Free public JSON API
+#  lever_board           | Single company boards     | Free public JSON API
+#  raytheon_careers      | Raytheon/RTX              | Browser (Firefox)
+#  l3harris_careers      | L3Harris                  | Browser (Firefox)
+#  ti_careers            | Texas Instruments         | Browser (Firefox)
+#
+# ══════════════════════════════════════════════════════════════════════════════
 
 sources:
+
+  # ── TIER 1: LinkedIn — Universal coverage (all companies post here) ──────────
   - name: "linkedin"
     type: "linkedin_search"
     enabled: true
@@ -15,17 +37,133 @@ sources:
         - "machine learning engineer"
         - "software developer"
         - "ai developer"
+        - "intern"
+        - "software engineer intern"
+        - "software developer intern"
+        - "co-op"
 
-  - name: "indeed"
-    type: "indeed_search"
-    enabled: false
-    config: {}
+  # ── TIER 2: Greenhouse Multi — 60+ top tech companies via free JSON API ─────
+  # Covers: OpenAI, Anthropic, Stripe, Vercel, Cloudflare, Notion, Figma,
+  #         Coinbase, Databricks, Discord, Reddit, Spotify, MongoDB, and more.
+  # No auth. No browser. Concurrent API calls.
+  - name: "greenhouse-tech-companies"
+    type: "greenhouse_multi"
+    enabled: true
+    config:
+      # Leave 'slugs' empty to use the built-in curated list of 60+ companies.
+      # Or override with your own list:
+      # slugs:
+      #   - openai
+      #   - anthropic
+      #   - stripe
+      keywords:
+        - "software engineer"
+        - "frontend"
+        - "backend"
+        - "full stack"
+        - "ai"
+        - "machine learning"
+        - "developer"
+        - "engineer"
+        - "internship"
+        - "software engineer intern"
 
-  - name: "glassdoor"
-    type: "glassdoor_search"
-    enabled: false
-    config: {}
+  # ── TIER 3: Lever Multi — 25+ startups via free JSON API ───────────────────
+  # Covers: Ramp, Scale AI, Weights & Biases, Netlify, Retool, Duolingo,
+  #         Lattice, Chainalysis, Headway, and more.
+  - name: "lever-tech-companies"
+    type: "lever_multi"
+    enabled: true
+    config:
+      # Leave 'sites' empty to use the built-in curated list.
+      keywords:
+        - "software engineer"
+        - "frontend"
+        - "backend"
+        - "full stack"
+        - "ai"
+        - "engineer"
+        - "developer"
+        - "internship"
+        - "software engineer intern"
 
+  # ── TIER 4: Ashby Multi — Modern startups via free GraphQL API ─────────────
+  # Covers companies like Linear, Vanta, Descript, Arc, Luma, Hex, Warp, etc.
+  - name: "ashby-startups"
+    type: "ashby_multi"
+    enabled: true
+    config:
+      orgs:
+        - "linear"
+        - "vanta"
+        - "descript"
+        - "arcbrowser"
+        - "luma"
+        - "hex"
+        - "warp"
+        - "cursor"
+        - "codeium"
+        - "vercel"
+        - "turso"
+        - "neon"
+        - "unkey"
+        - "trigger"
+        - "infisical"
+        - "resend"
+        - "cal"
+        - "plane"
+        - "maybe"
+      keywords:
+        - "engineer"
+        - "software"
+        - "frontend"
+        - "backend"
+        - "ai"
+        - "developer"
+        - "internship"
+        - "software engineer intern"
+
+  # ── TIER 5: Workday — FAANG & Enterprise via semi-public API ───────────────
+  # Covers: Google, Meta, Microsoft, Nvidia, Adobe, Salesforce, ServiceNow,
+  #         Snowflake, Palantir, Uber, CrowdStrike, and more.
+  - name: "workday-enterprise"
+    type: "workday"
+    enabled: true
+    config:
+      # Leave 'companies' empty to use the full built-in list (Google, Meta, etc.)
+      # Or filter to specific companies:
+      # enabled_companies:
+      #   - "Google"
+      #   - "Meta"
+      #   - "Microsoft"
+      #   - "Nvidia"
+      keywords:
+        - "software engineer"
+        - "software developer"
+        - "frontend engineer"
+        - "backend engineer"
+        - "machine learning engineer"
+        - "ai engineer"
+        - "internship"
+        - "software engineer intern"
+
+  # ── TIER 6: SmartRecruiters — Enterprise companies ─────────────────────────
+  # Covers: Zoom, Visa, Klarna, N26, HellFresh, Celonis, and more.
+  - name: "smartrecruiters-enterprise"
+    type: "smartrecruiters"
+    enabled: true
+    config:
+      # Leave 'companies' empty to use the built-in curated list.
+      keywords:
+        - "engineer"
+        - "developer"
+        - "software"
+        - "internship"
+
+  # ── Defense / Aerospace (disabled — see citizenship note) ─────────────────────────────────────────────────────
+  # NOTE: RTX roles frequently require U.S. citizenship, which L2-EAD does not
+  # satisfy. If re-enabling, keep the citizenship-related excluded_keywords in
+  # preferences.yaml so the pre-filter drops those postings before LLM scoring.
   - name: "raytheon"
     type: "raytheon_careers"
     enabled: false
@@ -33,20 +171,12 @@ sources:
       keywords:
         - "software engineer"
         - "systems engineer"
+        - "intern"
 
-  - name: "l3harris"
-    type: "l3harris_careers"
-    enabled: false
-    config: {}
-
-  - name: "texas-instruments"
-    type: "ti_careers"
-    enabled: false
-    config: {}
-
+  # ── Single-company boards (add specific companies here) ─────────────────────
   - name: "stripe-greenhouse"
     type: "greenhouse_board"
-    enabled: true
+    enabled: false    # Now covered by greenhouse_multi above
     config:
       board_token: "stripe"
       keywords:
@@ -54,16 +184,15 @@ sources:
         - "software"
         - "frontend"
         - "backend"
-        - "full stack"
-        - "ai"
 
   - name: "ramp-lever"
     type: "lever_board"
-    enabled: true
+    enabled: false    # Now covered by lever_multi above
     config:
       site_id: "ramp"
       department: "Engineering"
 
+  # ── Manual job URLs (paste specific job links here) ────────────────────────
   - name: "manual-urls"
     type: "url_list"
     enabled: true

@@ -25,10 +25,13 @@ def _job(
         remote_type=RemoteType.remote,
         description_text=description_text,
         description_html=None,
-        salary_min=100_000,
-        salary_max=150_000,
+        # Hourly pay consistent with an internship-seeking profile's salary
+        # expectations (the real preferences.yaml sets min 25 / max 30 per hour;
+        # an annual 100k-150k fixture would be correctly filtered out).
+        salary_min=25,
+        salary_max=30,
         salary_currency="USD",
-        salary_period="year",
+        salary_period="hour",
         source_url="https://example.com/jobs/1",
         ats_source=ATSSource.generic,
         url_hash="abc",

@@ -38,11 +38,27 @@ def matches_filters(job: Job, discovery: JobDiscoveryConfig, config) -> bool:
             return False
 
     salary_cfg = config.preferences.salary_expectations
-    if salary_cfg.min is not None and job.salary_max is not None:
-        if job.salary_max < salary_cfg.min:
-            return False
-    if salary_cfg.max is not None and job.salary_min is not None:
-        if job.salary_min > salary_cfg.max:
-            return False
+    if (salary_cfg.min is not None or salary_cfg.max is not None) and (
+        job.salary_min is not None or job.salary_max is not None
+    ):
+        # Normalize the job's salary into the configured expectation period
+        # (e.g. an annual $80k posting must not be compared against a $30/hr
+        # expectation as a raw number). 2080 hours ≈ 1 full-time year.
+        factor = 1.0
+        job_period = str(getattr(job.salary_period, "value", job.salary_period))
+        if job_period != salary_cfg.period:
+            if job_period == "hour" and salary_cfg.period == "year":
+                factor = 2080.0
+            elif job_period == "year" and salary_cfg.period == "hour":
+                factor = 1.0 / 2080.0
+            else:
+                factor = 1.0
+
+        if salary_cfg.min is not None and job.salary_max is not None:
+            if job.salary_max * factor < salary_cfg.min:
+                return False
+        if salary_cfg.max is not None and job.salary_min is not None:
+            if job.salary_min * factor > salary_cfg.max:
+                return False
 
     return True
