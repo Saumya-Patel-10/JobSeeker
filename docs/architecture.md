@@ -1,6 +1,6 @@
 # Architecture
 
-Job Finding Assistant is a fully local, AI-assisted job-application agent.
+JobSeeker is a fully local, AI-assisted job-application agent.
 Reasoning (matching, writing, classifying) is delegated to a local LLM via
 LM Studio or Ollama. Browser interaction is deterministic Playwright code
 — the AI never "clicks random buttons".

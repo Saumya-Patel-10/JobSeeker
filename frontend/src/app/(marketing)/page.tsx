@@ -125,7 +125,7 @@ export default function LandingPage() {
           <div className="space-y-7">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
               <span className="size-1.5 rounded-full bg-primary" />
-              Personal AI job-search assistant
+              Personal job-search assistant
             </span>
 
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-[3.4rem] lg:leading-[1.05]">

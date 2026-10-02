@@ -103,7 +103,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(
-    title="Job Finding Assistant",
+    title="JobSeeker",
     description="Supervised AI job application agent — inspection and control API.",
     version="0.2.0",
     lifespan=lifespan,

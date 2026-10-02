@@ -23,7 +23,7 @@ from app.llm.factory import provider_session
 def doctor() -> None:
     """Verify Python, configs, database, LLM, and Playwright."""
     setup()
-    table = Table(title="Job Finding Assistant — Doctor", show_lines=False)
+    table = Table(title="JobSeeker — Doctor", show_lines=False)
     table.add_column("Check", style="bold")
     table.add_column("Status", justify="center")
     table.add_column("Details")

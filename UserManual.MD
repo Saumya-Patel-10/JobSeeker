@@ -1,4 +1,4 @@
-# Job Finding Assistant - User Manual
+# JobSeeker - User Manual
 
 This manual explains how to install, configure, start, and operate the project end to end.
 It is written for day to day use, not just development.
@@ -19,7 +19,7 @@ Then click **Start Job Hunt** in Control Center. You do not need the CLI for nor
 
 ## 1) What this project is
 
-Job Finding Assistant is a **local, supervised** AI workflow for job applications.
+JobSeeker is a **local, supervised** AI workflow for job applications.
 
 It helps you:
 - Discover jobs from configured sources (API boards, browser adapters, manual URLs).

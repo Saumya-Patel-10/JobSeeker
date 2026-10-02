@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: `${appName} - AI job search, tailored and automated`,
+    default: appName,
     template: `%s | ${appName}`,
   },
   description:
