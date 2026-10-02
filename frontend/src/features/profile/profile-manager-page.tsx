@@ -24,6 +24,7 @@ const profileFormSchema = z.object({
   phone: z.string().min(5),
   linkedin: z.string().optional(),
   github: z.string().optional(),
+  portfolio: z.string().optional(),
   authorized_country: z.string().min(1),
   requires_sponsorship: z.boolean(),
   salary_min: z.coerce.number().int().nonnegative().optional(),
@@ -57,6 +58,7 @@ export function ProfileManagerPage() {
       phone: "",
       linkedin: "",
       github: "",
+      portfolio: "",
       authorized_country: "United States",
       requires_sponsorship: false,
       salary_min: undefined,
@@ -101,6 +103,7 @@ export function ProfileManagerPage() {
       phone: String(personal.phone ?? ""),
       linkedin: String(links.linkedin ?? ""),
       github: String(links.github ?? ""),
+      portfolio: String(links.portfolio ?? ""),
       authorized_country: String(authorizedCountries[0] ?? "United States"),
       requires_sponsorship: Boolean(workAuth.requires_sponsorship),
       salary_min: Number(salary.minimum ?? 0) || undefined,
@@ -142,6 +145,7 @@ export function ProfileManagerPage() {
         ...(profileQuery.data?.links as Record<string, unknown> | undefined),
         linkedin: values.linkedin || null,
         github: values.github || null,
+        portfolio: values.portfolio || null,
       },
       work_authorization: {
         ...(profileQuery.data?.work_authorization as Record<string, unknown> | undefined),
@@ -236,11 +240,15 @@ export function ProfileManagerPage() {
               </div>
               <div className="space-y-2">
                 <Label>LinkedIn</Label>
-                <Input {...form.register("linkedin")} />
+                <Input {...form.register("linkedin")} placeholder="https://linkedin.com/in/yourname" />
               </div>
               <div className="space-y-2">
                 <Label>GitHub</Label>
-                <Input {...form.register("github")} />
+                <Input {...form.register("github")} placeholder="https://github.com/yourname" />
+              </div>
+              <div className="space-y-2">
+                <Label>Portfolio Website</Label>
+                <Input {...form.register("portfolio")} placeholder="https://your-portfolio.netlify.app" />
               </div>
               <div className="space-y-2">
                 <Label>Authorized country</Label>

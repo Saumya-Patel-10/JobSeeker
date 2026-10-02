@@ -233,4 +233,23 @@ export const api = {
     const name = path.split(/[/\\]/).pop() ?? path;
     return `${apiBaseUrl}/automation/runtime/screenshots/${encodeURIComponent(name)}`;
   },
+
+  uploadMasterResume: async (file: File): Promise<{ saved_to: string; filename: string; size_bytes: number }> => {
+    const form = new FormData();
+    form.append("file", file);
+    const response = await fetch(`${apiBaseUrl}/profile/master-resume/upload`, {
+      method: "POST",
+      body: form,
+    });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Upload failed (${response.status}): ${text}`);
+    }
+    return response.json() as Promise<{ saved_to: string; filename: string; size_bytes: number }>;
+  },
+
+  masterResumeInfo: () =>
+    apiFetch<{ exists: boolean; filename: string | null; size_bytes: number | null; path: string | null }>(
+      "/profile/master-resume/info"
+    ),
 };

@@ -1,8 +1,8 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useRef, useMemo, useState } from "react"
 import { Group, Panel, Separator } from "react-resizable-panels"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, FileText, Upload, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { PageHeader } from "@/components/layout/page-header"
@@ -15,9 +15,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   useJobWorkspace,
   useJobs,
+  useMasterResumeInfo,
   useResumesForJob,
   useSettings,
   useUpdateSettings,
+  useUploadMasterResume,
 } from "@/hooks/use-console-queries"
 import { apiBaseUrl } from "@/lib/env"
 import { useUiStore } from "@/stores/ui-store"
@@ -31,6 +33,10 @@ export function ResumeStudioPage() {
   const jobs = useJobs({ limit: 200 })
   const settings = useSettings()
   const updateSettings = useUpdateSettings()
+  const masterResumeInfo = useMasterResumeInfo()
+  const uploadMasterResume = useUploadMasterResume()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
   const rememberedJobId = useUiStore((state) => state.selectedJobId)
   const [selectedJobId, setSelectedJobId] = useState<number | null>(rememberedJobId)
   const resumes = useResumesForJob(selectedJobId ?? Number.NaN)
@@ -84,12 +90,107 @@ export function ResumeStudioPage() {
     }
   }
 
+  async function handlePdfUpload(file: File) {
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      toast.error("Please upload a PDF file")
+      return
+    }
+    try {
+      const result = await uploadMasterResume.mutateAsync(file)
+      toast.success(`Master resume uploaded (${(result.size_bytes / 1024).toFixed(1)} KB)`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Upload failed"
+      toast.error(message)
+    }
+  }
+
   return (
     <div className="space-y-4">
       <PageHeader
         title="Resume Studio"
         description="Compare master resume content with generated versions, inspect optimization hints, and export paths."
       />
+
+      {/* Master Resume PDF Upload */}
+      <Card className="rounded-2xl border-border/70 bg-card/50">
+        <CardHeader>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <FileText className="size-4 text-primary" />
+            Master Resume PDF
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-[1fr,auto]">
+            <div
+              className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-6 transition-colors cursor-pointer ${
+                isDragging
+                  ? "border-primary bg-primary/10"
+                  : "border-border/70 hover:border-primary/60 hover:bg-muted/20"
+              }`}
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDragging(false)
+                const file = e.dataTransfer.files?.[0]
+                if (file) void handlePdfUpload(file)
+              }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) void handlePdfUpload(file)
+                  e.target.value = ""
+                }}
+              />
+              <Upload className="size-8 text-muted-foreground" />
+              <div className="text-center">
+                <p className="text-sm font-medium">
+                  {uploadMasterResume.isPending ? "Uploading…" : "Drag & drop your resume PDF here"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">or click to browse · PDF only</p>
+              </div>
+            </div>
+
+            {/* Current file info */}
+            <div className="flex flex-col justify-center gap-2 min-w-[220px] rounded-xl border border-border/70 p-4">
+              {masterResumeInfo.data?.exists ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                    <p className="text-sm font-medium truncate">Resume on file</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {masterResumeInfo.data.filename}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {masterResumeInfo.data.size_bytes
+                      ? `${(masterResumeInfo.data.size_bytes / 1024).toFixed(1)} KB`
+                      : ""}
+                  </p>
+                  <button
+                    type="button"
+                    className="mt-1 text-xs text-primary underline underline-offset-2 text-left"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Replace PDF
+                  </button>
+                </>
+              ) : (
+                <div className="text-center">
+                  <FileText className="mx-auto size-8 text-muted-foreground/40 mb-2" />
+                  <p className="text-xs text-muted-foreground">No resume uploaded yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="panel p-3">
         <div className="flex flex-wrap items-center gap-2">

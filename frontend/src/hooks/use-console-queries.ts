@@ -452,9 +452,31 @@ export function useAutomationControl() {
       mutationFn: () => api.pauseDiscovery(),
       onSuccess: invalidate,
     }),
+    resumeDiscovery: useMutation({
+      mutationFn: () => api.resumeDiscovery(),
+      onSuccess: invalidate,
+    }),
     stopDiscovery: useMutation({
       mutationFn: () => api.stopDiscovery(),
       onSuccess: invalidate,
     }),
   };
+}
+
+export function useMasterResumeInfo() {
+  return useQuery({
+    queryKey: ["master-resume-info"],
+    queryFn: () => api.masterResumeInfo(),
+    refetchInterval: 30_000,
+  });
+}
+
+export function useUploadMasterResume() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => api.uploadMasterResume(file),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["master-resume-info"] });
+    },
+  });
 }
