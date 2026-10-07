@@ -8,8 +8,8 @@ from typing import Any
 from app.config.loader import load_config
 from app.pipelines.ingest_pipeline import ingest_url
 from app.runtime.automation_runtime import get_automation_runtime
-from app.services.event_bus import get_event_bus
 from app.services.discovery_config import JobDiscoveryConfig
+from app.services.event_bus import get_event_bus
 from app.services.job_filters import matches_filters
 from app.sources.base import DiscoveryContext
 from app.sources.registry import get_adapter_for_source
@@ -62,7 +62,11 @@ class SourceOrchestrator:
         if not await runtime.await_ready():
             return {"source": source_name, "stopped": True, "urls": 0, "ingested": 0}
 
-        urls = await adapter.discover(ctx)
+        try:
+            urls = await adapter.discover(ctx)
+        except Exception as exc:
+            log.warning("source_orchestrator.source_failed", source=source_name, error=str(exc))
+            urls = []
         status_row["jobs_discovered"] = len(urls)
         ingested = 0
         failed = 0
@@ -113,12 +117,16 @@ class SourceOrchestrator:
                 limit=discovery.limit_per_source,
                 remote_preference=discovery.remote_preference,
             )
-            health = await adapter.health()
-            if health.status == "not_implemented":
+            try:
+                health = await adapter.health()
+                if health.status == "not_implemented":
+                    output[source.name] = []
+                    continue
+                urls = await adapter.discover(ctx)
+                output[source.name] = urls
+            except Exception as exc:
+                log.warning("source_orchestrator.source_failed", source=source.name, error=str(exc))
                 output[source.name] = []
-                continue
-            urls = await adapter.discover(ctx)
-            output[source.name] = urls
         return output
 
     async def poll_all(self, discovery: JobDiscoveryConfig) -> dict[str, Any]:
