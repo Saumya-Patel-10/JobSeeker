@@ -345,7 +345,7 @@ export function JobsExplorerPage() {
                     </div>
                     <p className="mt-3 text-sm font-semibold">No jobs match this filter</p>
                     <p className="mt-1 text-xs text-muted-foreground max-w-xs">
-                      Try selecting "All Roles" or clearing your search term to see more positions.
+                      Try selecting &quot;All Roles&quot; or clearing your search term to see more positions.
                     </p>
                     <Button
                       variant="outline"
