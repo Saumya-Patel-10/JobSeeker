@@ -60,7 +60,7 @@ export function BrowserSettingsPage() {
     <div className="space-y-4">
       <PageHeader
         title="Browser Session Settings"
-        description="Firefox-first profile management for persistent ATS login reuse."
+        description="Browser profile management for persistent ATS login reuse."
       />
 
       <section className="data-grid">
@@ -141,7 +141,9 @@ export function BrowserSettingsPage() {
       <section className="grid gap-4 xl:grid-cols-2">
         <Card className="panel">
           <CardHeader>
-            <CardTitle className="text-sm">System Firefox Profiles</CardTitle>
+            <CardTitle className="text-sm">
+              System {health.data?.engine === "chromium" ? "Chrome" : "Firefox"} Profiles
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2">
@@ -182,7 +184,7 @@ export function BrowserSettingsPage() {
             ))}
             {!grouped.system.length ? (
               <p className="rounded-lg border border-dashed border-border p-3 text-sm text-muted-foreground">
-                No system Firefox profiles detected.
+                No system {health.data?.engine === "chromium" ? "Chrome" : "Firefox"} profiles detected.
               </p>
             ) : null}
           </CardContent>
