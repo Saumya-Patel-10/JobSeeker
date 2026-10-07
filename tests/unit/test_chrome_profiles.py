@@ -55,3 +55,23 @@ def test_running_check(tmp_path: Path) -> None:
     assert chrome_is_running(user_data_dir=tmp_path) is False
     (tmp_path / "lockfile").write_text("x", encoding="utf-8")
     assert chrome_is_running(user_data_dir=tmp_path) is True
+
+
+def test_chrome_locked_fallback(tmp_path: Path, monkeypatch) -> None:
+    from app.automation.browser import BrowserSession
+    from app.config.schema import BrowserConfig
+
+    _write_local_state(tmp_path)
+    (tmp_path / "lockfile").write_text("locked", encoding="utf-8")
+    monkeypatch.setattr("app.automation.browser.chrome_user_data_dir", lambda: tmp_path)
+
+    cfg = BrowserConfig(
+        engine="chromium",
+        profile_source="system",
+        account_email="saumya.a.patel@gmail.com",
+        clone_system_profile_on_lock=True,
+    )
+    session = BrowserSession(cfg)
+    path, label = session._resolve_user_data_dir()
+    assert "managed fallback" in label
+    assert path.is_dir()
