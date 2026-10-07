@@ -62,27 +62,46 @@ class GenericAdapter(ATSAdapter):
         return False
 
     async def scrape_job(self, url: str) -> Job:
-        if self.session is None:
-            raise ScrapeError("Generic adapter requires a browser session for scraping")
-        page = await self.session.new_page()
-        try:
-            await page.goto(url, wait_until="domcontentloaded")
-            html = await page.content()
-            soup = BeautifulSoup(html, "lxml")
-            title = soup.find("h1").get_text(strip=True) if soup.find("h1") else "Unknown"
-            description_text = soup.get_text("\n", strip=True)[:20000]
-            return Job(
-                title=title,
-                company="Unknown",
-                description_text=description_text,
-                description_html=html,
-                source_url=url,
-                ats_source=ATSSource.generic,
-                url_hash=url_hash(url),
-                scraped_at=datetime.now(UTC),
-            )
-        finally:
-            await page.close()
+        html: str
+        if self.session is not None:
+            page = await self.session.new_page()
+            try:
+                await page.goto(url, wait_until="domcontentloaded")
+                html = await page.content()
+            finally:
+                await page.close()
+        else:
+            try:
+                import httpx
+
+                async with httpx.AsyncClient(follow_redirects=True, timeout=20.0) as client:
+                    resp = await client.get(
+                        url,
+                        headers={
+                            "User-Agent": (
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                            )
+                        },
+                    )
+                    resp.raise_for_status()
+                    html = resp.text
+            except Exception as exc:
+                raise ScrapeError(f"Generic adapter scrape failed: {exc}") from exc
+
+        soup = BeautifulSoup(html, "lxml")
+        title = soup.find("h1").get_text(strip=True) if soup.find("h1") else "Unknown"
+        description_text = soup.get_text("\n", strip=True)[:20000]
+        return Job(
+            title=title,
+            company="Unknown",
+            description_text=description_text,
+            description_html=html,
+            source_url=url,
+            ats_source=ATSSource.generic,
+            url_hash=url_hash(url),
+            scraped_at=datetime.now(UTC),
+        )
 
     async def _detect_fields(self, page: Any) -> list[FieldDescriptor]:
         raw = await page.evaluate(r"""
