@@ -50,8 +50,6 @@ import {
   useStatus,
   useStopJobHunt,
   useUpdateSettings,
-  useAutomationControl,
-  useDiscoveryStatus,
 } from "@/hooks/use-console-queries";
 import { useEventWebSocket } from "@/hooks/use-event-websocket";
 import { ApprovalQueuePanel } from "@/features/control/approval-queue-panel";
@@ -92,6 +90,25 @@ function parseList(value: string) {
 
 function parseUrls(value: string) {
   return parseList(value).filter((entry) => entry.startsWith("http"));
+}
+
+interface SavedPreferences {
+  role_keywords?: string[];
+  target_companies?: string[];
+  locations?: string[];
+  remote_preference?: RemotePreference;
+  automation?: {
+    default_interval_minutes?: number;
+    max_concurrent_sessions?: number;
+    cooldown_seconds?: number;
+  };
+  apply?: {
+    daily_limit?: number;
+    allow_auto_submit?: boolean;
+  };
+  browser?: {
+    headless?: boolean;
+  };
 }
 
 export function ControlCenterPage() {
@@ -143,11 +160,11 @@ export function ControlCenterPage() {
     if (!settings.data?.preferences || initialized.current) {
       return;
     }
-    const prefs = settings.data.preferences as Record<string, any>;
+    const prefs = settings.data.preferences as SavedPreferences;
     setKeywordsText((prefs.role_keywords ?? []).join(", "));
     setCompaniesText((prefs.target_companies ?? []).join(", "));
     setLocationsText((prefs.locations ?? []).join(", "));
-    setRemotePreference((prefs.remote_preference ?? "no_preference") as RemotePreference);
+    setRemotePreference(prefs.remote_preference ?? "no_preference");
     setIntervalMinutes(prefs.automation?.default_interval_minutes ?? 30);
     setMaxPerDay(prefs.apply?.daily_limit ?? 20);
     setMaxConcurrent(prefs.automation?.max_concurrent_sessions ?? 1);
@@ -184,20 +201,15 @@ export function ControlCenterPage() {
     }));
   }, [browserProfiles.data]);
 
-  const selectedProfile = profileOptions.find((option) => option.key === profileChoice)?.profile;
-
-  useEffect(() => {
-    if (profileChoice || !browserHealth.data) {
-      return;
-    }
+  const defaultProfileKey = useMemo(() => {
+    if (!browserHealth.data) return "";
     const activeKey = `${browserHealth.data.profile_source}:${browserHealth.data.active_profile_name ?? ""}`;
     const match = profileOptions.find((option) => option.key === activeKey);
-    if (match) {
-      setProfileChoice(match.key);
-    } else if (profileOptions.length) {
-      setProfileChoice(profileOptions[0].key);
-    }
-  }, [browserHealth.data, profileChoice, profileOptions]);
+    return match?.key ?? profileOptions[0]?.key ?? "";
+  }, [browserHealth.data, profileOptions]);
+
+  const effectiveProfileChoice = profileChoice || defaultProfileKey;
+  const selectedProfile = profileOptions.find((option) => option.key === effectiveProfileChoice)?.profile;
 
   async function handleStart() {
     if (!discoveryPayload.run_search && !discoveryPayload.urls.length) {
@@ -250,22 +262,25 @@ export function ControlCenterPage() {
   }
 
   async function handleSaveAutomation() {
-    const prefs = (settings.data?.preferences ?? {}) as Record<string, any>;
+    const prefs = (settings.data?.preferences ?? {}) as Record<string, unknown>;
+    const applyPrefs = (prefs.apply ?? {}) as Record<string, unknown>;
+    const autoPrefs = (prefs.automation ?? {}) as Record<string, unknown>;
+    const browserPrefs = (prefs.browser ?? {}) as Record<string, unknown>;
     const next = {
       ...prefs,
       apply: {
-        ...(prefs.apply ?? {}),
+        ...applyPrefs,
         daily_limit: maxPerDay,
         allow_auto_submit: allowAutoSubmit,
       },
       automation: {
-        ...(prefs.automation ?? {}),
+        ...autoPrefs,
         max_concurrent_sessions: maxConcurrent,
         cooldown_seconds: cooldownSeconds,
         default_interval_minutes: intervalMinutes,
       },
       browser: {
-        ...(prefs.browser ?? {}),
+        ...browserPrefs,
         headless,
       },
     };
@@ -275,7 +290,7 @@ export function ControlCenterPage() {
 
   async function handleProfileActivate() {
     if (!selectedProfile) {
-      toast.error("Select a Firefox profile first.");
+      toast.error("Select a browser profile first.");
       return;
     }
     await setActiveProfile.mutateAsync({
@@ -290,7 +305,7 @@ export function ControlCenterPage() {
 
   async function handleProfileClone() {
     if (!selectedProfile || selectedProfile.source !== "system") {
-      toast.error("Choose a system Firefox profile to clone.");
+      toast.error("Choose a system profile to clone.");
       return;
     }
     const target = cloneTarget.trim() || `${selectedProfile.name}-managed`;
@@ -479,7 +494,9 @@ export function ControlCenterPage() {
                 <StatusPill status={status.data?.llm_reachable ? "running" : "error"} />
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span>Firefox session</span>
+                <span>
+                  {browserHealth.data?.engine === "chromium" ? "Chrome session" : "Firefox session"}
+                </span>
                 <StatusPill
                   status={browserHealth.data?.cookies_available ? "running" : "paused"}
                 />
@@ -723,7 +740,9 @@ export function ControlCenterPage() {
 
         <Card className="panel">
           <CardHeader>
-            <CardTitle className="text-sm">Firefox Integration</CardTitle>
+            <CardTitle className="text-sm">
+              {browserHealth.data?.engine === "chromium" ? "Chrome Integration" : "Firefox Integration"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <MetricCard
@@ -734,7 +753,7 @@ export function ControlCenterPage() {
             />
             <div className="space-y-2">
               <label className="text-xs text-muted-foreground">Select profile</label>
-              <Select value={profileChoice} onValueChange={(val) => setProfileChoice(val ?? "")}>
+              <Select value={effectiveProfileChoice} onValueChange={(val) => setProfileChoice(val ?? "")}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose a profile" />
                 </SelectTrigger>
