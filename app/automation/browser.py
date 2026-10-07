@@ -53,6 +53,24 @@ class BrowserSession:
             raise BrowserError("Browser session not started")
         return self._context
 
+    @property
+    def is_alive(self) -> bool:
+        if self._context is None:
+            return False
+        try:
+            if hasattr(self._context, "is_closed") and self._context.is_closed():
+                return False
+            if (
+                self._browser is not None
+                and hasattr(self._browser, "is_connected")
+                and not self._browser.is_connected()
+            ):
+                return False
+            _ = self._context.pages
+            return True
+        except Exception:
+            return False
+
     @classmethod
     @asynccontextmanager
     async def launch(cls, config: BrowserConfig) -> AsyncIterator[BrowserSession]:
@@ -137,26 +155,41 @@ class BrowserSession:
         self._pw = None
 
     async def new_page(self) -> Page:
-        page = await self.context.new_page()
-
-        async def _on_nav(frame) -> None:
-            if frame != page.main_frame:
-                return
+        # Check if an unused initial blank page is available to reuse,
+        # preventing the browser from accumulating leftover 'about:blank' tabs.
+        page: Page | None = None
+        for p in self.context.pages:
             try:
-                title = await page.title()
-            except Exception:
-                title = ""
-            payload = {"url": page.url, "title": title, "main": True}
-            get_event_bus().emit("browser.navigate", payload)
-            try:
-                from app.runtime.automation_runtime import get_automation_runtime
-
-                get_automation_runtime().update_browser_context(url=page.url, title=title)
-                get_automation_runtime().log_action("navigate", detail=page.url)
+                if not p.is_closed() and p.url in ("about:blank", "chrome://newtab/", ""):
+                    page = p
+                    break
             except Exception:
                 pass
 
-        page.on("framenavigated", lambda frame: asyncio.create_task(_on_nav(frame)))
+        if page is None:
+            page = await self.context.new_page()
+
+        if not getattr(page, "_event_instrumented", False):
+            page._event_instrumented = True  # type: ignore[attr-defined]
+
+            async def _on_nav(frame) -> None:
+                if frame != page.main_frame:
+                    return
+                try:
+                    title = await page.title()
+                except Exception:
+                    title = ""
+                payload = {"url": page.url, "title": title, "main": True}
+                get_event_bus().emit("browser.navigate", payload)
+                try:
+                    from app.runtime.automation_runtime import get_automation_runtime
+
+                    get_automation_runtime().update_browser_context(url=page.url, title=title)
+                    get_automation_runtime().log_action("navigate", detail=page.url)
+                except Exception:
+                    pass
+
+            page.on("framenavigated", lambda frame: asyncio.create_task(_on_nav(frame)))
         return page
 
     async def screenshot(self, page: Page, name: str) -> Path:
@@ -300,6 +333,16 @@ class BrowserSession:
             profile = ChromeProfile(dir_name="Default", display_name="Default", email=None)
 
         if chrome_is_running(base):
+            if self.config.clone_system_profile_on_lock:
+                log.warning(
+                    "chrome.system_profile_locked_fallback",
+                    message="Google Chrome is currently running with this profile. Falling back to managed profile storage to avoid locking conflict.",
+                )
+                managed_name = f"{_safe_name(profile.dir_name)}-managed"
+                managed_profile = (BROWSER_PROFILES_DIR / managed_name).resolve()
+                managed_profile.mkdir(parents=True, exist_ok=True)
+                self._chrome_profile_directory = None
+                return managed_profile, f"{managed_name} (managed fallback)"
             raise BrowserError(
                 "Google Chrome appears to be running with this profile. "
                 "Close all Chrome windows and try again, or set "
@@ -328,12 +371,28 @@ def _safe_name(value: str) -> str:
 
 class BrowserSessionManager:
     """Manages long-lived browser sessions."""
+
     def __init__(self) -> None:
         self._sessions: dict[str, BrowserSession] = {}
 
     async def get_or_create(self, session_id: str, config: BrowserConfig) -> BrowserSession:
+        # Purge any dead or disconnected sessions
+        for sid in list(self._sessions.keys()):
+            if not self._sessions[sid].is_alive:
+                del self._sessions[sid]
+
+        # Return exact match if alive
         if session_id in self._sessions:
             return self._sessions[session_id]
+
+        # Reuse existing active session if requested or when using a persistent profile
+        # (Chromium strictly forbids multiple concurrent processes on the same user data directory)
+        if config.reuse_existing_session or config.persistent_profile:
+            active = next((s for s in self._sessions.values() if s.is_alive), None)
+            if active is not None:
+                self._sessions[session_id] = active
+                return active
+
         session = BrowserSession(config)
         await session.start()
         self._sessions[session_id] = session
@@ -342,14 +401,17 @@ class BrowserSessionManager:
     async def close(self, session_id: str) -> None:
         if session_id in self._sessions:
             session = self._sessions.pop(session_id)
-            await session.stop()
+            if session not in self._sessions.values():
+                await session.stop()
 
     async def close_all(self) -> None:
-        for session_id in list(self._sessions.keys()):
-            await self.close(session_id)
+        unique_sessions = set(self._sessions.values())
+        self._sessions.clear()
+        for session in unique_sessions:
+            await session.stop()
 
     def active_sessions(self) -> list[tuple[str, BrowserSession]]:
-        return list(self._sessions.items())
+        return [(sid, s) for sid, s in self._sessions.items() if s.is_alive]
 
 _global_session_manager: BrowserSessionManager | None = None
 
