@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { StatusPill } from "@/components/workflow/status-pill";
 import {
   useAutomationControl,
   useRuntimeSnapshot,
@@ -22,10 +21,11 @@ export function LiveBrowserPage() {
   const control = useAutomationControl();
 
   const runtime = wsRuntime ?? snapshot.data;
+  const lastScreenshot = runtime?.last_screenshot;
   const screenshotSrc = useMemo(() => {
-    if (!runtime?.last_screenshot) return null;
-    return api.screenshotUrl(runtime.last_screenshot);
-  }, [runtime?.last_screenshot]);
+    if (!lastScreenshot) return null;
+    return api.screenshotUrl(lastScreenshot);
+  }, [lastScreenshot]);
 
   const browserEvents = events.filter((e) => e.type.startsWith("browser."));
 
