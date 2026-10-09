@@ -47,21 +47,48 @@ async def tailor_for_job(
     master = load_master()
     prompts = PromptRegistry(config.prompts)
 
-    async with provider_session(config.preferences.llm) as provider:
-        resume = await tailor_resume(
-            job=job,
-            master=master,
-            provider=provider,
-            prompts=prompts,
-        )
-        cover = None
-        if write_cover_letter:
-            cover = await generate_cover_letter(
+    resume = None
+    cover = None
+    try:
+        async with provider_session(config.preferences.llm) as provider:
+            resume = await tailor_resume(
                 job=job,
-                profile=config.profile,
-                resume=resume,
+                master=master,
                 provider=provider,
                 prompts=prompts,
+            )
+            if write_cover_letter:
+                cover = await generate_cover_letter(
+                    job=job,
+                    profile=config.profile,
+                    resume=resume,
+                    provider=provider,
+                    prompts=prompts,
+                )
+    except Exception as exc:
+        log.warning("tailor.llm_fallback_to_master", job_id=job.id, error=str(exc))
+        from app.resume.tailor import pick_template
+        template = pick_template(job, master)
+        resume = TailoredResume(
+            headline=master.headline,
+            summary=master.summary,
+            skills=master.skills,
+            employment=master.employment,
+            education=master.education,
+            certifications=master.certifications,
+            projects=master.projects,
+            languages=master.languages,
+            template=template,
+            model_used="master_fallback",
+        )
+        if write_cover_letter:
+            cover = (
+                f"Dear Hiring Team,\n\n"
+                f"I am writing to express my enthusiastic interest in the {job.title} role at {job.company}. "
+                f"As a Computer Science student at The University of Texas at Dallas with strong experience across full-stack and AI technologies, "
+                f"I am excited by the prospect of contributing to your team.\n\n"
+                f"Thank you for your time and consideration.\n\n"
+                f"Sincerely,\n{config.profile.personal.first_name} {config.profile.personal.last_name}"
             )
 
     job_dir = RESUMES_GENERATED_DIR / f"job_{job.id or 'unknown'}"
@@ -80,8 +107,8 @@ async def tailor_for_job(
             docx_path=str(docx_path),
             pdf_path=str(pdf_path),
             json_payload=resume.model_dump(mode="json"),
-            model_used=resume.model_used,
-            ats_score_notes=resume.ats_score_notes,
+            model_used=getattr(resume, "model_used", "master_fallback"),
+            ats_score_notes=getattr(resume, "ats_score_notes", None),
         )
         version_id = row.id
 
