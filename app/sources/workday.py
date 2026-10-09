@@ -93,32 +93,41 @@ class WorkdaySourceAdapter(JobSourceAdapter):
 
         keywords = [k.lower() for k in (ctx.keywords or self._config_keywords())]
         urls: list[str] = []
-        per_company_limit = max(5, ctx.limit // max(len(companies), 1))
+        semaphore = asyncio.Semaphore(6)
 
-        for company in companies:
-            if len(urls) >= ctx.limit:
-                break
+        async def fetch_company(company: dict) -> list[str]:
             tenant = company.get("tenant")
             base_url = company.get("base_url", "")
             name = company.get("name", "unknown")
-
             if not tenant:
-                log.info("workday.company_skipped", company=name, reason="no_tenant")
-                continue
+                return []
+            async with semaphore:
+                try:
+                    return await self._fetch_via_api(
+                        base_url=base_url,
+                        tenant=tenant,
+                        company_name=name,
+                        keywords=keywords,
+                        limit=per_company_limit,
+                    )
+                except Exception as exc:
+                    log.warning("workday.company_failed", company=name, error=str(exc))
+                    return []
 
-            try:
-                company_urls = await self._fetch_via_api(
-                    base_url=base_url,
-                    tenant=tenant,
-                    company_name=name,
-                    keywords=keywords,
-                    limit=per_company_limit,
-                )
-                for u in company_urls:
+        results = await asyncio.gather(
+            *[fetch_company(c) for c in companies],
+            return_exceptions=True,
+        )
+
+        for res in results:
+            if isinstance(res, list):
+                for u in res:
                     if u not in urls:
                         urls.append(u)
-            except Exception as exc:
-                log.warning("workday.company_failed", company=name, error=str(exc))
+                    if len(urls) >= ctx.limit:
+                        break
+            if len(urls) >= ctx.limit:
+                break
 
         get_event_bus().emit(
             "discovery.source_complete",
@@ -147,7 +156,7 @@ class WorkdaySourceAdapter(JobSourceAdapter):
 
         body = {**_WORKDAY_SEARCH_BODY, "searchText": search_text, "limit": limit}
 
-        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=6.0, follow_redirects=True) as client:
             try:
                 resp = await client.post(api_url, headers=headers, json=body)
                 if resp.status_code != 200:
