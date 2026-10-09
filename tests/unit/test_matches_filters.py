@@ -45,7 +45,7 @@ def _job(
 def test_excluded_title_filters_out():
     config = load_config()
     discovery = JobDiscoveryConfig()
-    job = _job(title="Senior Software Engineer")
+    job = _job(title="Staff Augmentation Engineer")
     assert matches_filters(job, discovery, config) is False
 
 
@@ -57,4 +57,11 @@ def test_keyword_match_passes():
         remote_preference="remote",
     )
     job = _job(title="Program Manager", description_text="defense program management")
+    assert matches_filters(job, discovery, config) is True
+
+
+def test_location_anywhere_and_remote_passes():
+    config = load_config()
+    discovery = JobDiscoveryConfig()
+    job = _job(title="Software Engineer Intern", description_text="Python and React internship")
     assert matches_filters(job, discovery, config) is True
