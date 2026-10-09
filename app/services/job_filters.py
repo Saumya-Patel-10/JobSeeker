@@ -23,12 +23,11 @@ def matches_filters(job: Job, discovery: JobDiscoveryConfig, config) -> bool:
             return False
 
     if locations:
-        location = (job.location or "").lower()
-        if not any(str(loc).lower() in location for loc in locations):
+        if not _location_matches(job, locations):
             return False
 
     if remote_preference and remote_preference != "no_preference":
-        if job.remote_type.value != remote_preference:
+        if not _remote_matches(job, remote_preference):
             return False
 
     excluded = list(config.preferences.excluded_keywords) + get_excluded_title_patterns()
@@ -62,3 +61,81 @@ def matches_filters(job: Job, discovery: JobDiscoveryConfig, config) -> bool:
                 return False
 
     return True
+
+
+def _location_matches(job: Job, locations: list[str]) -> bool:
+    if not locations:
+        return True
+
+    normalized_locs = [str(l).strip().lower() for l in locations if str(l).strip()]
+    if not normalized_locs:
+        return True
+
+    # If user specifies wildcard / "Anywhere", they accept jobs everywhere!
+    if any(l in ("anywhere", "any", "all", "*", "worldwide", "everywhere") for l in normalized_locs):
+        return True
+
+    job_loc = (job.location or "").strip().lower()
+    is_job_remote = (
+        getattr(job.remote_type, "value", str(job.remote_type)).lower() == "remote"
+        or "remote" in job_loc
+        or "telecommute" in job_loc
+        or "work from home" in job_loc
+        or "wfh" in job_loc
+    )
+
+    for req in normalized_locs:
+        if "remote" in req:
+            if is_job_remote:
+                return True
+            if not job_loc or job_loc == "unknown":
+                return True
+
+        if not job_loc or job_loc == "unknown":
+            continue
+
+        if req in job_loc or job_loc in req:
+            return True
+
+        parts = [p.strip() for p in req.replace("-", " ").split(",") if p.strip()]
+        for part in parts:
+            if len(part) >= 3 and part in job_loc:
+                return True
+
+    return False
+
+
+def _remote_matches(job: Job, remote_preference: str) -> bool:
+    if not remote_preference or remote_preference == "no_preference":
+        return True
+
+    job_remote = getattr(job.remote_type, "value", str(job.remote_type)).lower()
+    job_loc = (job.location or "").lower()
+    title_lower = (job.title or "").lower()
+
+    inferred_remote = (
+        job_remote == "remote"
+        or "remote" in job_loc
+        or "remote" in title_lower
+        or "work from home" in job_loc
+    )
+    inferred_hybrid = (
+        job_remote == "hybrid"
+        or "hybrid" in job_loc
+        or "hybrid" in title_lower
+    )
+    inferred_onsite = (
+        job_remote == "onsite"
+        or "onsite" in job_loc
+        or "on-site" in job_loc
+    )
+
+    if remote_preference == "remote":
+        return inferred_remote
+    if remote_preference == "hybrid":
+        return inferred_hybrid or inferred_remote
+    if remote_preference == "onsite":
+        return inferred_onsite or (not inferred_remote and not inferred_hybrid)
+
+    return True
+
