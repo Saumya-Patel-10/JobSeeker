@@ -261,6 +261,18 @@ class JobApplicationOrchestrator:
             by_source = await get_source_orchestrator().discover_urls(discovery)
             for batch in by_source.values():
                 urls.extend(batch)
+        # Also include any open jobs in the database that haven't been scored yet
+        try:
+            async with session_scope() as db:
+                from app.database.dao import jobs as jobs_dao
+                existing_jobs = await jobs_dao.list_jobs(db, limit=50)
+                for r in existing_jobs:
+                    if r.source_url and r.source_url not in urls:
+                        if not await _has_score(r.id):
+                            urls.append(r.source_url)
+        except Exception as exc:
+            log.warning("orchestrator.unscored_db_load_failed", error=str(exc))
+
         urls = _dedupe(urls)
         self._status.stats.jobs_seen += len(urls)
         self._status.queue = [
@@ -291,7 +303,12 @@ class JobApplicationOrchestrator:
                 self._status.stats.jobs_filtered += 1
                 continue
 
-            await self._process_job(job, ctx)
+            try:
+                await self._process_job(job, ctx)
+            except Exception as exc:
+                self._status.stats.errors += 1
+                log.warning("orchestrator.job_failed", job_id=job.id, error=str(exc))
+                self._emit("orchestrator.job_error", {"job_id": job.id, "error": str(exc)})
 
     async def _process_job(self, job: Job, ctx: _RunContext) -> None:
         if job.id is None:
